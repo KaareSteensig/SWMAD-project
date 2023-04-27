@@ -1,9 +1,5 @@
 package groupassignment.tourshare.menu
 
-<<<<<<< HEAD
-@Composable
-
-=======
 import android.util.Log
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -43,4 +39,3 @@ fun AppBarPreview() {
         Log.v("AppBarPreview", "Icon clicked")
     }
 }
->>>>>>> 926fb4e561afbbece4982918819b4c8974a5a723

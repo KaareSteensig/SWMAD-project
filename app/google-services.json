@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "421237724083",
+    "project_id": "tourshare-457b6",
+    "storage_bucket": "tourshare-457b6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:421237724083:android:9ce045aa6d25a3a563b1c6",
+        "android_client_info": {
+          "package_name": "groupassignment.tourshare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "421237724083-4iqtod2tta3qjbk0pmc9frccnm7dsuri.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLlGFhWFP1lKRiJjGGgxUzNnKFmur0uV8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "421237724083-4iqtod2tta3qjbk0pmc9frccnm7dsuri.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

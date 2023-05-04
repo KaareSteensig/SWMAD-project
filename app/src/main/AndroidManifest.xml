@@ -33,10 +33,15 @@
             android:allowBackup="false"
             android:name=".MainActivity"
             android:exported="false"
-            android:label="SpotShare"
             android:theme="@style/Theme.TourShare"/>
         <activity
             android:name=".Camera.CameraActivity"
+            android:exported="false"
+            android:label="@string/title_activity_camera"
+            android:theme="@style/Theme.TourShare" />
+        <activity
+            android:allowBackup="false"
+            android:name=".gps.TrackRoute"
             android:exported="false"
             android:label="@string/title_activity_camera"
             android:theme="@style/Theme.TourShare" />

@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">tour share</string>
     <string name="title_activity_camera">CameraActivity</string>
+    <string name="tourshare">TourShare</string>
+    <string name="image_of_map">Image of map</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="e_mail">Email</string>
+    <string name="spotshare">SpotShare</string>
+    <string name="register">Register</string>
 </resources>

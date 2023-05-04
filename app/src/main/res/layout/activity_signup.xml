@@ -28,21 +28,22 @@
         android:textSize="22sp"
         android:textStyle="bold" />
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
         android:padding="10dp"
-        tools:context=".firebase.Login">
+        tools:context=".firebase.Signup">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/login"
+            android:text="@string/register"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:gravity="center" />
+            android:gravity="center"/>
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -60,14 +61,6 @@
             android:layout_height="wrap_content"
             android:hint="@string/password"
             android:minHeight="48dp" />
-
-        <Button
-            android:id="@+id/loginButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:backgroundTint="#465678"
-            android:text="@string/login" />
 
         <Button
             android:id="@+id/signUpButton"

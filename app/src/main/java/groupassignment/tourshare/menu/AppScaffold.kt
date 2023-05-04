@@ -1,10 +1,7 @@
 package groupassignment.tourshare.menu
 
 import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
@@ -20,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 
 @Composable
-fun MenuScaffold(title: String, menuItems:List<MenuItemModel>, scaffoldState: ScaffoldState, background: Color, content: String) {
+fun MenuScaffold(title: String, menuItems:List<MenuItemModel>, scaffoldState: ScaffoldState, background: Color, content: @Composable (PaddingValues) -> Unit) {
     //val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     Scaffold(
@@ -41,7 +38,7 @@ fun MenuScaffold(title: String, menuItems:List<MenuItemModel>, scaffoldState: Sc
                 ,
                 verticalArrangement = Arrangement.Top
             ) {
-                Text(text = content)
+                content(it)
             }
         },
         drawerContent = {
@@ -51,7 +48,7 @@ fun MenuScaffold(title: String, menuItems:List<MenuItemModel>, scaffoldState: Sc
     )
 }
 
-@Preview
+/*@Preview
 @Composable
 fun MenuScaffoldPreview() {
     val scope = rememberCoroutineScope()
@@ -85,6 +82,6 @@ fun MenuScaffoldPreview() {
         ),
         scaffoldState,
         Color.Blue,
-        "Testcontent"
+
     )
-}
+}*/

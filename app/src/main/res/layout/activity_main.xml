@@ -22,46 +22,76 @@
         app:layout_constraintHorizontal_bias="0.222"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="412dp"
-        android:layout_height="581dp"
+
+    <ImageButton
+        android:id="@+id/Play_Button"
+        android:layout_width="79dp"
+        android:layout_height="62dp"
+        android:layout_marginBottom="12dp"
+        android:adjustViewBounds="true"
+        android:background="#01395D"
+        android:contentDescription="button"
+        android:scaleType="centerInside"
+        android:src="@drawable/play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.74"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageButton
-        android:id="@+id/startButton"
-        android:layout_width="79dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/ic_launcher_foreground"
+    <com.google.android.gms.maps.MapView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:id="@+id/Map_View"
+        android:layout_width="match_parent"
+        android:layout_height="580dp"
+        android:layout_marginBottom="92dp"
+        android:adjustViewBounds="true"
+        android:background="#01395D"
+        android:contentDescription="mapview"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toEndOf="@+id/Camera_Button"
-        app:layout_constraintTop_toBottomOf="@+id/mapView" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
-        android:id="@+id/MenuButton"
-        android:layout_width="73dp"
-        android:layout_height="64dp"
-        android:src="@drawable/ic_launcher_foreground"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/Menu_Button"
+        android:layout_width="79dp"
+        android:layout_height="62dp"
+        android:layout_marginBottom="668dp"
+        android:adjustViewBounds="true"
+        android:background="#01395D"
+        android:contentDescription="button"
+        android:scaleType="centerInside"
+        android:src="@drawable/menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="104dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="27dp"
+        android:layout_marginBottom="5dp"
         android:text="Route"
         android:visibility="visible"
         app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toTopOf="@+id/mapView"
+        app:layout_constraintBottom_toTopOf="@+id/Map_View"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/MenuButton"
+        app:layout_constraintStart_toEndOf="@+id/Menu_Button"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
+
+    <androidx.appcompat.widget.ActionMenuView
+        android:id="@+id/Menu_View"
+        android:layout_width="300dp"
+        android:layout_height="728dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

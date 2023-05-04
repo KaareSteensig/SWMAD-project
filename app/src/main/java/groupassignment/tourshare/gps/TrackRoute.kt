@@ -70,8 +70,8 @@ class TrackRoute: ComponentActivity() {
                     Row() {
                         Button(onClick = {navController.navigate("Route")}) {
                             Icons.Default.PlayArrow
+                        }
                     }
-                }
                 }
             }
         }

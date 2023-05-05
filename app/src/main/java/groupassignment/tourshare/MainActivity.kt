@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.location.Geocoder
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
@@ -81,31 +82,36 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         }
 
         val mapview: MapView = findViewById(R.id.Map_View)
-        mapview.getMapAsync(this)
-
-
-        val playButton: ImageButton = findViewById(R.id.Play_Button)
-        playButton.setOnClickListener{
-
-        }
-
 
         if((ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) == PackageManager.PERMISSION_GRANTED)
             && checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
             locationService.setLocationOn()
         }
-        else
-        {
-            val permission = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+        else {
+            val permission = arrayOf(
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            )
             requestPermissions(permission, 2)
             locationService.setLocationOn()
+            if((ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) == PackageManager.PERMISSION_GRANTED)
+                && checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            }
         }
+        mapview.onCreate(savedInstanceState)
+        mapview.getMapAsync(this)
+
+        val playButton: ImageButton = findViewById(R.id.Play_Button)
+        playButton.setOnClickListener{
+
+        }
+
     }
     override fun onMapReady(googleMap: GoogleMap) {
         googleMap.addMarker(
             MarkerOptions()
-                .position(LatLng(0.0, 0.0))
+                .position(LatLng(55.392982, 10.343575))
                 .title("Marker")
         )
     }
@@ -131,6 +137,41 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             }
         }
     }
+
+    /*override fun onStart() {
+        super.onStart()
+        mapview.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapview.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapview.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapview.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapview.onDestroy()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        mapview.onSaveInstanceState(outState)
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapview.onLowMemory()
+    }*/
 
 }
 

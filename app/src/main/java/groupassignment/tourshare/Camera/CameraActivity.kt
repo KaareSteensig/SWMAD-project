@@ -1,130 +1,104 @@
 package groupassignment.tourshare.Camera
 
 import android.app.Activity
-import android.content.ContentValues
+import android.content.ContextWrapper
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
+import android.text.Editable
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.camera.core.ImageCapture
+import com.bumptech.glide.Glide
 import groupassignment.tourshare.R
-import java.io.File
-import java.io.FileDescriptor
-import java.io.IOException
+import java.io.*
 import java.util.*
 
 
 
 class CameraActivity : ComponentActivity() {
 
-    private val Camera_Permission_Code = 1
-    private val CameraRequesetCode  = 2
-    var frame: ImageView? = null
-    var image_uri: Uri? = null
+    companion object
+    {
+        private const val camera_requestCode = 1
+        private const val image_directory = "taken_photos"
+    }
+
+    private var imagePath: String = ""
+    private var photo : Bitmap? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
 
-        frame = findViewById(R.id.PhotoPreview)
+        // Open Camera of the Phone
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(intent, camera_requestCode)
 
-        val values = ContentValues()
-        values.put(MediaStore.Images.Media.TITLE, "New Picture")
-        values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
-        image_uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri)
-        startActivityForResult(cameraIntent, CameraRequesetCode)
-
-
-
-        val title_text = findViewById<EditText>(R.id.title_text)
-        val title = title_text.text
-        Log.i("TITLE: " ,"${title}")
-
-
-        val desc_text = findViewById<EditText>(R.id.descr_text)
-        val description = desc_text.text
-        Log.i("description: " ,"${description}")
-
-
-
+        // handle the Buttons
         val safeButton: Button = findViewById(R.id.safe_button)
-        safeButton.setOnClickListener{
-            //saveToGallery(image)
-            Toast.makeText(this, title, Toast.LENGTH_SHORT).show()
-            Toast.makeText(this, description, Toast.LENGTH_SHORT).show()
+        safeButton.setOnClickListener {
+            val title_text = findViewById<EditText>(R.id.title_text)
+            val title = title_text.text.toString()
+            Log.i("TITLE: ", title)
+
+            val desc_text = findViewById<EditText>(R.id.descr_text)
+            val description = desc_text.text.toString()
+            Log.i("description: ", description)
+            photo?.let {
+                imagePath = saveImageToInternalStorage(photo!!)
+                Log.i("SAVING", "Image saved to ${imagePath}")
+                // Reload image withthis URI
+            }
             finish()
 
         }
-
-
-
     }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == Camera_Permission_Code)
-        {
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(intent, CameraRequesetCode)
-            }
-            else
-            {
-                Toast.makeText(this, "No Permission to the Camera!", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == camera_requestCode) {
+                data?.extras?.let {
+                    photo = data.extras!!.get("data") as Bitmap
+                    val PhotoPreview: ImageView = findViewById(R.id.PhotoPreview)
 
-        if(resultCode == Activity.RESULT_OK)
-        {
-            if(requestCode == CameraRequesetCode)
-            {
-                val bitmap = uriToBitmap(image_uri!!)
-                frame?.setImageBitmap(bitmap)
-            }
+                    Glide.with(this)
+                        .load(photo)
+                        .centerCrop()
+                        .into(PhotoPreview)
+                }
+
+            } else
+                Log.i("Cmaera Activity.onActivityResult", "An error occurred! ")
         }
-        else
-            Log.i("main Activity.RESULT_OK", "An error occurred! ")
-
-
     }
 
-    // takes URI of the image and returns bitmap
-    private fun uriToBitmap(selectedFileUri: Uri): Bitmap? {
+    private fun saveImageToInternalStorage(bitmap: Bitmap): String
+    {
+        val wrapper = ContextWrapper(applicationContext)
+        var file = wrapper.getDir(image_directory, MODE_PRIVATE)
+        file = File(file,"${UUID.randomUUID()}.jpg")
+
         try {
-            val parcelFileDescriptor = contentResolver.openFileDescriptor(selectedFileUri, "r")
-            val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-            val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-            parcelFileDescriptor.close()
-            return image
-        } catch (e: IOException) {
+            val stream : OutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            stream.flush()
+            stream.close()
+        }catch (e: IOException)
+        {
             e.printStackTrace()
         }
-        return null
+        // return directory and name of file
+        return file.absolutePath
     }
+
+
 }
+
 

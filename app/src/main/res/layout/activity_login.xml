@@ -12,37 +12,43 @@
         android:layout_marginEnd="-2dp"
         android:adjustViewBounds="true"
         android:alpha="0.5"
+        android:background="#FFFFFF"
         android:contentDescription="@string/image_of_map"
         android:scaleType="centerCrop"
-        android:src="@drawable/login_background"
+        android:src="@drawable/map1"
         tools:ignore="VisualLintBounds" />
 
     <TextView
+        android:id="@+id/intro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#465678"
         android:backgroundTint="#465678"
+        android:fontFamily="@font/amaranth"
         android:gravity="center"
         android:padding="16dp"
         android:text="@string/spotshare"
-        android:textColor="#039BE5"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:textColor="#FFFFFF"
+        android:textSize="34sp"
+        android:textStyle="normal" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
         android:padding="10dp"
         tools:context=".firebase.Login">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@string/login"
+            android:textColor="#0B0B0B"
             android:textSize="22sp"
-            android:textStyle="bold"
-            android:gravity="center" />
+            android:textStyle="bold" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -52,14 +58,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/e_mail"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="#090909" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="#090909" />
 
         <Button
             android:id="@+id/loginButton"

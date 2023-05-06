@@ -47,7 +47,7 @@ class Service(
     suspend fun startTracking(routeCallBack: (locations: List<Location>) -> Unit) {
         doTrack = true
         while (doTrack) {
-            delay(10 * 1000)
+            delay(1000L)
             track.add(getCurrentLocation())
             Log.v(this.javaClass.name, "tracking location")
         }

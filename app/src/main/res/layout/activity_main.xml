@@ -7,6 +7,17 @@
     android:background="#01395D"
     tools:context=".MainActivity">
 
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/my_composable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="411dp"
+        android:layout_marginBottom="731dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageButton
         android:id="@+id/Camera_Button"
         android:layout_width="60dp"
@@ -37,6 +48,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.74"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/Stop_Button"
+        android:layout_width="79dp"
+        android:layout_height="62dp"
+        android:layout_marginBottom="12dp"
+        android:adjustViewBounds="true"
+        android:background="#01395D"
+        android:contentDescription="button"
+        android:scaleType="centerInside"
+        android:src="@drawable/play"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.gms.maps.MapView

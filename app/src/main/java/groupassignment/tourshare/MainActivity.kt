@@ -8,6 +8,7 @@ import android.location.Location
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
+import android.view.View
 import android.widget.ImageButton
 import androidx.activity.ComponentActivity
 import androidx.appcompat.widget.ActionMenuView
@@ -26,6 +27,7 @@ import com.google.maps.android.compose.*
 import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.gps.Service
 import groupassignment.tourshare.gps.routing.TAG_ROUTE
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -41,6 +43,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private lateinit var locationName: MutableState<String>
     private lateinit var currentPos: MutableState<LatLng>
     private lateinit var mMap: GoogleMap
+    private var youMarker: Marker? = null
 
     private val Camera_Permission_Code = 1
 
@@ -105,17 +108,48 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                 scope.launch {
                     location = locationService.getCurrentLocation()
                     mapview.getMapAsync(this@MainActivity)
+                    while (true)
+                    {
+                        delay(10 * 1000L)
+                        location = locationService.getCurrentLocation()
+                        youMarker?.position = LatLng(location.latitude,location.longitude)
+                        Log.v(this.javaClass.name, "Updated user location")
+                    }
                 }
             }
         }
 
+        val playButton: ImageButton = findViewById(R.id.Play_Button)
+        val pauseButton: ImageButton = findViewById(R.id.Pause_Button)
+        val continueButton: ImageButton = findViewById(R.id.Continue_Button)
         val stopButton: ImageButton = findViewById(R.id.Stop_Button)
+        stopButton.visibility = View.GONE
+        pauseButton.visibility = View.GONE
+        continueButton.visibility = View.GONE
         stopButton.setOnClickListener{
             locationService.stopTracking()
+            pauseButton.visibility = View.GONE
+            playButton.visibility = View.VISIBLE
+            stopButton.visibility = View.GONE
+            continueButton.visibility = View.GONE
         }
 
-        val playButton: ImageButton = findViewById(R.id.Play_Button)
+        pauseButton.setOnClickListener{
+            locationService.pauseTracking()
+            pauseButton.visibility = View.GONE
+            continueButton.visibility = View.VISIBLE
+        }
+
+        continueButton.setOnClickListener{
+            locationService.resumeTracking()
+            continueButton.visibility = View.GONE
+            pauseButton.visibility = View.VISIBLE
+        }
+
         playButton.setOnClickListener{
+            stopButton.visibility = View.VISIBLE
+            playButton.visibility = View.GONE
+            pauseButton.visibility = View.VISIBLE
             findViewById<ComposeView>(R.id.my_composable).setContent {
                 polyLineList = remember { mutableStateOf(listOf<LatLng>()) }
                 val scope = rememberCoroutineScope()
@@ -149,13 +183,12 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             /*val track = Intent(this@MainActivity, TrackRoute::class.java)
             startActivity(track)*/
         }
-
     }
     override fun onMapReady(googleMap: GoogleMap) {
-        googleMap.addMarker(
+        youMarker = googleMap.addMarker(
             MarkerOptions()
                 .position(LatLng(location.latitude,location.longitude))
-                .title("Your start position")
+                .title("You")
         )
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude,location.longitude),15f))
         mMap = googleMap

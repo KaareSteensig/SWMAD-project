@@ -27,6 +27,7 @@ class Service(
     val locationOn = mutableStateOf(false)
     private val track = mutableListOf<Location>()
     private var doTrack = false
+    private var doPause = false
 
     companion object {
         const val REQUEST_ID = 9
@@ -34,6 +35,14 @@ class Service(
 
     fun stopTracking() {
         doTrack = false
+    }
+
+    fun pauseTracking() {
+        doPause = true
+    }
+
+    fun resumeTracking() {
+        doPause = false
     }
 
     fun setLocationOn() {
@@ -47,9 +56,15 @@ class Service(
     suspend fun startTracking(routeCallBack: (locations: List<Location>) -> Unit) {
         doTrack = true
         while (doTrack) {
-            delay(1000L)
-            track.add(getCurrentLocation())
-            Log.v(this.javaClass.name, "tracking location")
+            if (doPause)
+            {
+                delay(1000L)
+            }
+            else {
+                delay(1000L)
+                track.add(getCurrentLocation())
+                Log.v(this.javaClass.name, "tracking location")
+            }
         }
         Log.v(this.javaClass.name, "Done tracking")
         routeCallBack(track)

@@ -22,6 +22,7 @@ import backend.RepositoryMenus
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import groupassignment.tourshare.R
+import groupassignment.tourshare.gps.routing.Route
 import groupassignment.tourshare.menu.MenuItemModel
 import groupassignment.tourshare.menu.MenuScaffold
 import kotlinx.coroutines.launch
@@ -39,7 +40,8 @@ class TrackRoute: ComponentActivity() {
         geoCoder = Geocoder(this, Locale.getDefault())
         locationService = Service(fusedLocationClient, this, geoCoder)
         setContent {
-            val scope = rememberCoroutineScope()
+            Route(locationService = locationService)
+            /*val scope = rememberCoroutineScope()
             val scaffoldState = rememberScaffoldState()
             val navController = rememberNavController()
             Surface(
@@ -73,7 +75,7 @@ class TrackRoute: ComponentActivity() {
                         }
                     }
                 }
-            }
+            }*/
         }
     }
 

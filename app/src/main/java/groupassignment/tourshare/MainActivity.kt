@@ -3,8 +3,6 @@ package groupassignment.tourshare
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
@@ -24,14 +22,13 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
-import com.google.maps.android.compose.CameraPositionState
-import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.*
 import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.gps.Service
-import groupassignment.tourshare.gps.routing.Route
 import groupassignment.tourshare.gps.routing.TAG_ROUTE
 import kotlinx.coroutines.launch
 import java.util.*
+
 
 class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private val repository = RepositoryMenus()
@@ -40,6 +37,10 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private lateinit var locationService: Service
     private lateinit var mapview: MapView
     private lateinit var location: Location
+    private lateinit var polyLineList: MutableState<List<LatLng>>
+    private lateinit var locationName: MutableState<String>
+    private lateinit var currentPos: MutableState<LatLng>
+    private lateinit var mMap: GoogleMap
 
     private val Camera_Permission_Code = 1
 
@@ -108,11 +109,45 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             }
         }
 
+        val stopButton: ImageButton = findViewById(R.id.Stop_Button)
+        stopButton.setOnClickListener{
+            locationService.stopTracking()
+        }
+
         val playButton: ImageButton = findViewById(R.id.Play_Button)
         playButton.setOnClickListener{
             findViewById<ComposeView>(R.id.my_composable).setContent {
-                Route(locationService = locationService)
+                polyLineList = remember { mutableStateOf(listOf<LatLng>()) }
+                val scope = rememberCoroutineScope()
+                locationName = remember { mutableStateOf("Unknown Location") }
+                currentPos = remember { mutableStateOf(LatLng(1.35, 103.87)) }
+                val cameraPositionState = rememberCameraPositionState {
+                    position = CameraPosition.fromLatLngZoom(currentPos.value, 15f)
+                }
+                LaunchedEffect(locationService.locationOn.value) {
+                    scope.launch {
+                        locationService.startTracking {
+                            polyLineList.value = it.map { l ->
+                                LatLng(
+                                    l.latitude,
+                                    l.longitude
+                                )
+                            }
+                            currentPos.value =
+                                LatLng(
+                                    polyLineList.value[0].latitude,
+                                    polyLineList.value[0].longitude
+                                )
+                            cameraPositionState.position =
+                                CameraPosition.fromLatLngZoom(currentPos.value, 15f)
+                            Log.v(TAG_ROUTE, "Length of locations ${it.size.toString()}")
+                            drawRoute(mMap)
+                        }
+                    }
+                }
             }
+            /*val track = Intent(this@MainActivity, TrackRoute::class.java)
+            startActivity(track)*/
         }
 
     }
@@ -120,9 +155,24 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         googleMap.addMarker(
             MarkerOptions()
                 .position(LatLng(location.latitude,location.longitude))
-                .title("Your position")
+                .title("Your start position")
         )
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude,location.longitude),15f))
+        mMap = googleMap
+    }
+    private fun drawRoute(googleMap: GoogleMap) {
+        googleMap.addPolyline(
+            PolylineOptions()
+                .color(0xff0000ff.toInt())
+                .pattern(listOf(Dash(2f)))
+                .addAll(polyLineList.value)
+        )
+        googleMap.addMarker(
+            MarkerOptions()
+                .title("Location: ${locationName.value}")
+                .snippet("Marker in ${locationName.value}")
+                .position(currentPos.value)
+        )
     }
     override fun onRequestPermissionsResult(
         requestCode: Int,

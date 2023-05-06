@@ -49,6 +49,20 @@
         app:layout_constraintHorizontal_bias="0.74"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <ImageButton
+        android:id="@+id/Stop_Button"
+        android:layout_width="79dp"
+        android:layout_height="62dp"
+        android:layout_marginBottom="12dp"
+        android:adjustViewBounds="true"
+        android:background="#01395D"
+        android:contentDescription="button"
+        android:scaleType="centerInside"
+        android:src="@drawable/play"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <com.google.android.gms.maps.MapView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"

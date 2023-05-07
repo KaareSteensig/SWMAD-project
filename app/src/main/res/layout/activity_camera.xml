@@ -61,25 +61,23 @@
         android:layout_height="54dp"
         android:layout_marginStart="2dp"
         android:layout_marginTop="15dp"
+        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
         android:ems="10"
         android:inputType="textPersonName"
         android:textColor="#F1E9E9"
-        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
         app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toBottomOf="@+id/PhotoPreview"
-        android:hint="DEFAULT TITLE"  />
+        app:layout_constraintTop_toBottomOf="@+id/PhotoPreview" />
 
     <EditText
         android:id="@+id/descr_text"
         android:layout_width="320dp"
         android:layout_height="48dp"
         android:layout_marginStart="2dp"
+        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
         android:ems="10"
         android:inputType="textPersonName"
         android:textColor="#F1E9E9"
-        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ "
         app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/title_text"
-        android:hint="DEFAULT DESCRIPTION"/>
+        app:layout_constraintTop_toBottomOf="@+id/title_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

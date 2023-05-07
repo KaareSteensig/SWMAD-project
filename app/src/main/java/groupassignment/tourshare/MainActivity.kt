@@ -121,7 +121,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         }
 
 
-        }
+
 
         val menu: ActionMenuView = findViewById(R.id.Menu_View)
 
@@ -231,8 +231,8 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             /*val track = Intent(this@MainActivity, TrackRoute::class.java)
             startActivity(track)*/
         }
-
     }
+
     override fun onMapReady(googleMap: GoogleMap) {
         youMarker = googleMap.addMarker(
             MarkerOptions()

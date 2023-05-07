@@ -78,27 +78,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.google.android.gms.maps.MapView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
+    <com.google.android.gms.maps.MapView
         android:id="@+id/Map_View"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="580dp"
-        android:layout_marginBottom="92dp"
+        android:layout_width="266dp"
+        android:layout_height="382dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:adjustViewBounds="true"
         android:background="#01395D"
         android:contentDescription="mapview"
         android:scaleType="centerInside"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/Stop_Button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Menu_Button" />
 
     <ImageButton
         android:id="@+id/Menu_Button"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginBottom="668dp"
         android:adjustViewBounds="true"
         android:background="#01395D"
         android:contentDescription="button"
@@ -107,12 +107,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="104dp"
         android:layout_height="48dp"
+        android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:text="Route"
         android:textColor="#FFFFFF"
@@ -120,8 +123,10 @@
         app:autoSizeTextType="uniform"
         app:layout_constraintBottom_toTopOf="@+id/Map_View"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.376"
         app:layout_constraintStart_toEndOf="@+id/Menu_Button"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.444"
         tools:visibility="visible" />
 
     <ImageButton

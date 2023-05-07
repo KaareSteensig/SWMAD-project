@@ -123,8 +123,6 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
 
 
 
-        val menu: ActionMenuView = findViewById(R.id.Menu_View)
-
         val openMenuButton: ImageButton = findViewById(R.id.Menu_Button)
         openMenuButton.setOnClickListener{
             //menu.showOverflowMenu()

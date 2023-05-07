@@ -48,7 +48,19 @@
             android:allowBackup="false"
             android:name=".gps.TrackRoute"
             android:exported="false"
-            android:label="@string/title_activity_camera"
+            android:label="TrackRoute"
+            android:theme="@style/Theme.TourShare" />
+        <activity
+            android:allowBackup="false"
+            android:name=".RouteList.RoutesListActivity"
+            android:exported="false"
+            android:label="RoutesListActivity"
+            android:theme="@style/Theme.TourShare" />
+        <activity
+            android:allowBackup="false"
+            android:name=".ImageLists.PhotosListActivity"
+            android:exported="false"
+            android:label="PhotosListActivity"
             android:theme="@style/Theme.TourShare" />
         <activity
             android:name=".firebase.Login"

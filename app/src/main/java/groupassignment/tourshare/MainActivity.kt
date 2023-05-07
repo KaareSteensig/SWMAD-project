@@ -1,15 +1,27 @@
 package groupassignment.tourshare
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.location.Geocoder
+import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.location.Location
 import android.os.Bundle
+import android.provider.MediaStore
+import android.provider.Settings
 import android.os.PersistableBundle
 import android.util.Log
+import android.view.Menu
+import android.widget.Button
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.appcompat.widget.ActionMenuView
 import androidx.compose.runtime.*
@@ -24,6 +36,11 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.compose.*
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.gps.Service
 import groupassignment.tourshare.gps.routing.TAG_ROUTE
@@ -54,26 +71,57 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         locationService = Service(fusedLocationClient, this, geoCoder)
         setContentView(R.layout.activity_main)
 
+        // If the Camera Button is clicked:
         val openCameraButton: ImageButton = findViewById(R.id.Camera_Button)
-        openCameraButton.setOnClickListener{
-            //val CameraView = Intent(this@MainActivity, CameraActivity::class.java)
-            //startActivity(CameraView)
-            if((ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA ) == PackageManager.PERMISSION_GRANTED)
-                && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-            {
-                val CameraView = Intent(this@MainActivity, CameraActivity::class.java)
-                startActivity(CameraView)
-            }
-            else
-            {
-                val permission = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                requestPermissions(permission, Camera_Permission_Code)
-                //ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), Camera_Permission_Code)
-                //ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 112)
-            }
-
-
+        openCameraButton.setOnClickListener {
+            // Check if the app has the permission to storage and camera
+            // use Dexter plugin to simplify the process
+            Log.i("MAin", "You clicked the camera button")
+            Dexter.withContext(this).withPermissions(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA,
+            ).withListener(object : MultiplePermissionsListener {
+                // What to do when we have all permissions:
+                override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+                    p0?.let {
+                        if (p0!!.areAllPermissionsGranted()) {
+                            /*Toast.makeText(this@MainActivity,"You have permissions now",Toast.LENGTH_SHORT                           ).show()
+                            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                            startActivityForResult(intent, camera_requestCode)*/
+                            val CameraView = Intent(this@MainActivity, CameraActivity::class.java)
+                            startActivity(CameraView)
+                        }
+                    }
+                }
+                // What to do when we have not all permissions:
+                override fun onPermissionRationaleShouldBeShown(
+                    p0: MutableList<PermissionRequest>?,
+                    p1: PermissionToken?
+                ) {
+                    // create intent which goes to the settings of the application
+                    AlertDialog.Builder(this@MainActivity)
+                        .setMessage("You have to give permissions!")
+                        .setPositiveButton("go to settings") { _, _ ->
+                            try {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                val uri = Uri.fromParts("package", packageName, null)
+                                intent.data = uri
+                                startActivity(intent)
+                            } catch (e: ActivityNotFoundException) {
+                                e.printStackTrace()
+                            }
+                        }
+                        .setNegativeButton("cancel")
+                        { dialog, _ ->
+                            dialog.dismiss()
+                        }.show()
+                }
+            }).onSameThread().check()
         }
+
+
+
 
         val menu: ActionMenuView = findViewById(R.id.Menu_View)
 
@@ -184,6 +232,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             startActivity(track)*/
         }
     }
+
     override fun onMapReady(googleMap: GoogleMap) {
         youMarker = googleMap.addMarker(
             MarkerOptions()

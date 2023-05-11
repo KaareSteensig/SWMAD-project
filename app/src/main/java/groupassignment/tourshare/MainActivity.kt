@@ -48,7 +48,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
-
 class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private val repository = RepositoryMenus()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -76,7 +75,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         openCameraButton.setOnClickListener {
             // Check if the app has the permission to storage and camera
             // use Dexter plugin to simplify the process
-            Log.i("MAin", "You clicked the camera button")
+            Log.i("Main", "You clicked the camera button")
             Dexter.withContext(this).withPermissions(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -123,7 +122,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
 
 
 
-        val menu: ActionMenuView = findViewById(R.id.Menu_View)
+        //val menu: ActionMenuView = findViewById(R.id.Menu_View)
 
         val openMenuButton: ImageButton = findViewById(R.id.Menu_Button)
         openMenuButton.setOnClickListener{

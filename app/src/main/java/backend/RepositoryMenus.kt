@@ -9,7 +9,6 @@ import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.LoggedActivity
 import groupassignment.tourshare.MainActivity
 import groupassignment.tourshare.firebase.Login
-import groupassignment.tourshare.gps.TrackRoute
 
 data class MenuItemModel(val id: String, val title: String, val iconVector: ImageVector, val contentDescription: String, val activityName:  Class<ComponentActivity>)
 
@@ -17,7 +16,7 @@ class RepositoryMenus {
     private val menus = listOf(
         MenuItemModel("1", "Map", Icons.Default.Home, "Map", MainActivity::class.java as Class<ComponentActivity>)
         ,
-        MenuItemModel("2", "Routes", Icons.Default.LocationOn, "Routes", TrackRoute::class.java as Class<ComponentActivity>)
+        MenuItemModel("2", "Routes", Icons.Default.LocationOn, "Routes", MainActivity::class.java as Class<ComponentActivity>)
         ,
         MenuItemModel("3", "Pictures", Icons.Default.List, "Pictures", CameraActivity::class.java as Class<ComponentActivity>)
         ,

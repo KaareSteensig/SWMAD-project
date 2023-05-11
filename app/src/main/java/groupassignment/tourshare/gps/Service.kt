@@ -11,12 +11,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+const val TAG_ROUTE = "ROUTE"
 class Service(
 
     private val client: FusedLocationProviderClient,
@@ -53,17 +56,23 @@ class Service(
         locationOn.value = false
     }
 
-    suspend fun startTracking(routeCallBack: (locations: List<Location>) -> Unit) {
+    suspend fun startTracking(youMarker: Marker?, routeCallBack: (locations: List<Location>) -> Unit) {
         doTrack = true
         while (doTrack) {
             if (doPause)
             {
                 delay(1000L)
+                val location: Location = getCurrentLocation()
+                youMarker?.position = LatLng(location.latitude,location.longitude)
+                Log.v(this.javaClass.name, "Updated user location")
             }
             else {
                 delay(1000L)
                 track.add(getCurrentLocation())
                 Log.v(this.javaClass.name, "tracking location")
+                val location: Location = getCurrentLocation()
+                youMarker?.position = LatLng(location.latitude,location.longitude)
+                Log.v(this.javaClass.name, "Updated user location")
             }
         }
         Log.v(this.javaClass.name, "Done tracking")

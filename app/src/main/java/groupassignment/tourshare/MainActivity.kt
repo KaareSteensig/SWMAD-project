@@ -46,12 +46,9 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.gps.Service
 import groupassignment.tourshare.gps.routing.TAG_ROUTE
-import groupassignment.tourshare.menu.MenuItemModel
-import groupassignment.tourshare.menu.MenuScaffold
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
-
 
 
 class MainActivity : ComponentActivity(), OnMapReadyCallback  {
@@ -67,6 +64,8 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private lateinit var mMap: GoogleMap
     private var youMarker: Marker? = null
 
+    private val Camera_Permission_Code = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -74,13 +73,12 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         locationService = Service(fusedLocationClient, this, geoCoder)
         setContentView(R.layout.activity_main)
 
-
         // If the Camera Button is clicked:
         val openCameraButton: ImageButton = findViewById(R.id.Camera_Button)
         openCameraButton.setOnClickListener {
             // Check if the app has the permission to storage and camera
             // use Dexter plugin to simplify the process
-            Log.i("MAin", "You clicked the camera button")
+            Log.i("Main", "You clicked the camera button")
             Dexter.withContext(this).withPermissions(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -131,7 +129,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         openMenuButton.setOnClickListener{
             //menu.showOverflowMenu()
 
-            MenuScaffold("Titel", menuItemList, Color.Cyan, content =  )
+            //MenuScaffold("Titel", menuItemList, Color.Cyan, content =  )
 
         }
 

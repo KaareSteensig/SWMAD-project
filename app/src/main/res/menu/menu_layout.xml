@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools = "http://schemas.android.com/tools"
+    tools:showIn= "navigationView">
+    <group
+        android:checkableBehavior = "single">
+        <item
+            android:id="@+id/home"
+            android:icon="@drawable/pause"
+            android:title="Map"/>
+        <item
+            android:id="@+id/ToRoutes"
+            android:icon="@drawable/baseline_menu_24"
+            android:title="Routes"/>
+        <item
+            android:id="@+id/ToPictures"
+            android:icon="@drawable/baseline_menu_24"
+            android:title="Pictures"/>
+        <item
+            android:id="@+id/Logout"
+            android:icon="@drawable/baseline_menu_24"
+            android:title="Logout"/>
+
+    </group>
+
+
+</menu>

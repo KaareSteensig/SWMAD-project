@@ -24,7 +24,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.appcompat.widget.ActionMenuView
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import backend.RepositoryMenus
@@ -44,9 +46,12 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.gps.Service
 import groupassignment.tourshare.gps.routing.TAG_ROUTE
+import groupassignment.tourshare.menu.MenuItemModel
+import groupassignment.tourshare.menu.MenuScaffold
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
+
 
 
 class MainActivity : ComponentActivity(), OnMapReadyCallback  {
@@ -62,14 +67,13 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private lateinit var mMap: GoogleMap
     private var youMarker: Marker? = null
 
-    private val Camera_Permission_Code = 1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         geoCoder = Geocoder(this, Locale.getDefault())
         locationService = Service(fusedLocationClient, this, geoCoder)
         setContentView(R.layout.activity_main)
+
 
         // If the Camera Button is clicked:
         val openCameraButton: ImageButton = findViewById(R.id.Camera_Button)
@@ -126,6 +130,9 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         val openMenuButton: ImageButton = findViewById(R.id.Menu_Button)
         openMenuButton.setOnClickListener{
             //menu.showOverflowMenu()
+
+            MenuScaffold("Titel", menuItemList, Color.Cyan, content =  )
+
         }
 
         mapview = findViewById(R.id.Map_View)

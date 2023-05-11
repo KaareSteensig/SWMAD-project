@@ -17,8 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
 
 @Composable
-fun MenuScaffold(title: String, menuItems:List<MenuItemModel>, scaffoldState: ScaffoldState, background: Color, content: @Composable (PaddingValues) -> Unit) {
-    //val scaffoldState = rememberScaffoldState()
+fun MenuScaffold(title: String, menuItems:List<MenuItemModel>, background: Color, content: @Composable (PaddingValues) -> Unit) {
+    val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     Scaffold(
         scaffoldState = scaffoldState,

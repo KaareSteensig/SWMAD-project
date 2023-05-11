@@ -43,7 +43,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.gps.Service
-import groupassignment.tourshare.gps.routing.TAG_ROUTE
+import groupassignment.tourshare.gps.TAG_ROUTE
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
@@ -207,7 +207,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                 }
                 LaunchedEffect(locationService.locationOn.value) {
                     scope.launch {
-                        locationService.startTracking {
+                        locationService.startTracking(youMarker) {
                             polyLineList.value = it.map { l ->
                                 LatLng(
                                     l.latitude,

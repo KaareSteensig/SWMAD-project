@@ -19,10 +19,25 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="110dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="5dp"
+        android:text="Route"
+        android:textColor="#FFFFFF"
+        android:visibility="visible"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/Menu_Button"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
     <ImageButton
         android:id="@+id/Play_Button"
         android:layout_width="60dp"
         android:layout_height="60dp"
+        android:layout_marginTop="656dp"
         android:layout_marginBottom="15dp"
         android:adjustViewBounds="true"
         android:background="#01395D"
@@ -32,7 +47,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/Continue_Button"
@@ -81,8 +97,8 @@
     <com.google.android.gms.maps.MapView
         android:id="@+id/Map_View"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="266dp"
-        android:layout_height="382dp"
+        android:layout_width="411dp"
+        android:layout_height="465dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:adjustViewBounds="true"
@@ -99,6 +115,8 @@
         android:id="@+id/Menu_Button"
         android:layout_width="60dp"
         android:layout_height="60dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
         android:adjustViewBounds="true"
         android:background="#01395D"
         android:contentDescription="button"
@@ -110,24 +128,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="104dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:text="Route"
-        android:textColor="#FFFFFF"
-        android:visibility="visible"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toTopOf="@+id/Map_View"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.376"
-        app:layout_constraintStart_toEndOf="@+id/Menu_Button"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.444"
-        tools:visibility="visible" />
 
     <ImageButton
         android:id="@+id/Camera_Button"
@@ -148,5 +148,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Map_View"
         app:layout_constraintVertical_bias="1.0" />
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fitsSystemWindows="true"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:openDrawer="start">
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            app:headerLayout="@layout/nav_header"
+            app:menu="@menu/menu_layout">
+
+        </com.google.android.material.navigation.NavigationView>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

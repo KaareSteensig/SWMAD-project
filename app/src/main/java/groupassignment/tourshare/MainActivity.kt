@@ -1,34 +1,29 @@
 package groupassignment.tourshare
 
-import android.app.Activity
+import android.Manifest
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
-import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.location.Geocoder
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.provider.Settings
 import android.os.PersistableBundle
+import android.provider.Settings
 import android.util.Log
-import android.view.Menu
-import android.widget.Button
+import android.view.Gravity
+import android.view.MenuItem
 import android.view.View
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.appcompat.widget.ActionMenuView
-import androidx.compose.material.rememberScaffoldState
+import android.widget.*
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import backend.RepositoryMenus
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -37,6 +32,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
+import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.compose.*
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -44,6 +40,8 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import groupassignment.tourshare.Camera.CameraActivity
+import groupassignment.tourshare.ImageLists.PhotosListActivity
+import groupassignment.tourshare.RouteList.RoutesListActivity
 import groupassignment.tourshare.gps.Service
 import groupassignment.tourshare.gps.TAG_ROUTE
 import kotlinx.coroutines.delay
@@ -51,7 +49,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 
-class MainActivity : ComponentActivity(), OnMapReadyCallback  {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
     private val repository = RepositoryMenus()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var geoCoder: Geocoder
@@ -64,7 +62,9 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private lateinit var mMap: GoogleMap
     private var youMarker: Marker? = null
 
-    private val Camera_Permission_Code = 1
+    lateinit var toggle: ActionBarDrawerToggle
+    lateinit var drawerLayout: DrawerLayout
+    lateinit var navView: NavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +72,19 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         geoCoder = Geocoder(this, Locale.getDefault())
         locationService = Service(fusedLocationClient, this, geoCoder)
         setContentView(R.layout.activity_main)
+
+
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navView = findViewById(R.id.nav_view)
+
+        toggle = ActionBarDrawerToggle(
+            this, drawerLayout, 0, 0
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        navView.setNavigationItemSelectedListener(this)
+
+
 
         // If the Camera Button is clicked:
         val openCameraButton: ImageButton = findViewById(R.id.Camera_Button)
@@ -126,12 +139,17 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
 
 
         val openMenuButton: ImageButton = findViewById(R.id.Menu_Button)
-        openMenuButton.setOnClickListener{
-            //menu.showOverflowMenu()
+        openMenuButton.setOnClickListener ( View.OnClickListener() {
+            Log.i("Main", "You clicked the MENU button")
+           // drawerLayout.openDrawer(Gravity.LEFT)
+            @Override fun onClick(v: View) {
+                                // If the navigation drawer is not open then open it, if its already open then close it.
+                if(!drawerLayout.isDrawerOpen(Gravity.LEFT)) drawerLayout.openDrawer(Gravity.LEFT)
+                else drawerLayout.closeDrawer(Gravity.RIGHT)
+            }
+        })
 
-            //MenuScaffold("Titel", menuItemList, Color.Cyan, content =  )
 
-        }
 
         mapview = findViewById(R.id.Map_View)
 
@@ -316,6 +334,31 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         super.onLowMemory()
         mapview.onLowMemory()
     }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_map -> {
+                Toast.makeText(this, "MAP clicked", Toast.LENGTH_SHORT).show()
+            }
+            R.id.nav_routes -> {
+                Toast.makeText(this, "ROUTES clicked", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, RoutesListActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_pics -> {
+                Toast.makeText(this, "PICS clicked", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, PhotosListActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_logout -> {
+                Toast.makeText(this, "Sign out clicked", Toast.LENGTH_SHORT).show()
+            }
+        }
+        drawerLayout.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+
 
 }
 

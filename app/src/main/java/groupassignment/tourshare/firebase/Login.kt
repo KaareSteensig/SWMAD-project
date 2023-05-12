@@ -46,15 +46,5 @@ class Login : AppCompatActivity() {
             }
         }
 
-        val b1: Button = findViewById<Button>(R.id.b1)
-        b1.setOnClickListener {
-            val intent = Intent(this, RoutesListActivity::class.java)
-            startActivity(intent)
-        }
-        val b2: Button = findViewById<Button>(R.id.b2)
-        b2.setOnClickListener {
-            val intent = Intent(this, PhotosListActivity::class.java)
-            startActivity(intent)
-        }
     }
 }

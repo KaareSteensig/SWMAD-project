@@ -86,18 +86,6 @@
             android:backgroundTint="#465678"
             android:text="@string/sign_up" />
 
-        <Button
-            android:id="@+id/b1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button" />
-
-        <Button
-            android:id="@+id/b2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button" />
-
     </LinearLayout>
 
 

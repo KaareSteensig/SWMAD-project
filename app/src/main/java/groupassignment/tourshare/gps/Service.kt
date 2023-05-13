@@ -11,6 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import kotlinx.coroutines.Dispatchers
@@ -56,14 +58,17 @@ class Service(
         locationOn.value = false
     }
 
-    suspend fun startTracking(youMarker: Marker?, routeCallBack: (locations: List<Location>) -> Unit) {
+    suspend fun startTracking(youMarker: Marker?, mMap: GoogleMap, routeCallBack: (locations: List<Location>) -> Unit) {
         doTrack = true
+        doPause = false
         while (doTrack) {
+            track.clear()
             if (doPause)
             {
                 delay(1000L)
                 val location: Location = getCurrentLocation()
                 youMarker?.position = LatLng(location.latitude,location.longitude)
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude,location.longitude),15f))
                 Log.v(this.javaClass.name, "Updated user location")
             }
             else {

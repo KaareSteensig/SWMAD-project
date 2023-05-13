@@ -45,12 +45,6 @@
             android:label="@string/title_activity_camera"
             android:theme="@style/Theme.TourShare" />
         <activity
-            android:allowBackup="false"
-            android:name=".gps.TrackRoute"
-            android:exported="false"
-            android:label="@string/title_activity_camera"
-            android:theme="@style/Theme.TourShare" />
-        <activity
             android:name=".firebase.Login"
             android:exported="true">
             <intent-filter>

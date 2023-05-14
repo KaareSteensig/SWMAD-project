@@ -23,6 +23,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Button
+import android.view.View
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.ActionMenuView
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.ComposeView
+import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import backend.RepositoryMenus
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -42,15 +55,16 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.ImageLists.PhotosListActivity
 import groupassignment.tourshare.RouteList.RoutesListActivity
+import groupassignment.tourshare.databinding.ActivityMainBinding
 import groupassignment.tourshare.gps.Service
 import groupassignment.tourshare.gps.TAG_ROUTE
+import groupassignment.tourshare.gps.drawRoute
+import groupassignment.tourshare.gps.updatePosition
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
-
-class MainActivity : AppCompatActivity(), OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
-    private val repository = RepositoryMenus()
+class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var geoCoder: Geocoder
     private lateinit var locationService: Service
@@ -62,9 +76,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, NavigationView.OnN
     private lateinit var mMap: GoogleMap
     private var youMarker: Marker? = null
 
-    lateinit var toggle: ActionBarDrawerToggle
-    lateinit var drawerLayout: DrawerLayout
-    lateinit var navView: NavigationView
+    private val Camera_Permission_Code = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,21 +147,38 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, NavigationView.OnN
             }).onSameThread().check()
         }
 
-
-
-
         val openMenuButton: ImageButton = findViewById(R.id.Menu_Button)
-        openMenuButton.setOnClickListener ( View.OnClickListener() {
-            Log.i("Main", "You clicked the MENU button")
-           // drawerLayout.openDrawer(Gravity.LEFT)
-            @Override fun onClick(v: View) {
-                                // If the navigation drawer is not open then open it, if its already open then close it.
-                if(!drawerLayout.isDrawerOpen(Gravity.LEFT)) drawerLayout.openDrawer(Gravity.LEFT)
-                else drawerLayout.closeDrawer(Gravity.RIGHT)
+        openMenuButton.setOnClickListener{
+            val drawer: DrawerLayout = findViewById(R.id.drawerLayout)
+            drawer.open()
+            val navView: NavigationView = findViewById(R.id.navView)
+            navView.setNavigationItemSelectedListener {
+                when (it.itemId) {
+                    R.id.map -> {
+                        //what should happen:
+                        Toast.makeText(this@MainActivity, "Map Item Clicked", Toast.LENGTH_SHORT).show()
+                        drawer.close()
+                    }
+                    R.id.pictures -> {
+                        Toast.makeText(this@MainActivity, "Pictures Item Clicked", Toast.LENGTH_SHORT).show()
+                        drawer.close()
+                    }
+                    R.id.routes -> {
+                        Toast.makeText(this@MainActivity, "Routes Item Clicked", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, RoutesListActivity::class.java)
+                        startActivity(intent)
+                        drawer.close()
+                    }
+                    R.id.logout -> {
+                        Toast.makeText(this@MainActivity, "Logout Item Clicked", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, PhotosListActivity::class.java)
+                        startActivity(intent)
+                        drawer.close()
+                    }
+                }
+                true
             }
-        })
-
-
+        }
 
         mapview = findViewById(R.id.Map_View)
 
@@ -177,13 +206,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, NavigationView.OnN
                 scope.launch {
                     location = locationService.getCurrentLocation()
                     mapview.getMapAsync(this@MainActivity)
-                    while (true)
-                    {
-                        delay(10 * 1000L)
-                        location = locationService.getCurrentLocation()
-                        youMarker?.position = LatLng(location.latitude,location.longitude)
-                        Log.v(this.javaClass.name, "Updated user location")
-                    }
                 }
             }
         }
@@ -197,10 +219,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, NavigationView.OnN
         continueButton.visibility = View.GONE
         stopButton.setOnClickListener{
             locationService.stopTracking()
-            pauseButton.visibility = View.GONE
+            if(pauseButton.visibility == View.GONE)
+            {
+                continueButton.visibility = View.GONE
+            }
+            else
+            {
+                pauseButton.visibility = View.GONE
+            }
             playButton.visibility = View.VISIBLE
             stopButton.visibility = View.GONE
-            continueButton.visibility = View.GONE
         }
 
         pauseButton.setOnClickListener{
@@ -229,28 +257,31 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, NavigationView.OnN
                 }
                 LaunchedEffect(locationService.locationOn.value) {
                     scope.launch {
-                        locationService.startTracking(youMarker) {
-                            polyLineList.value = it.map { l ->
-                                LatLng(
-                                    l.latitude,
-                                    l.longitude
-                                )
+                        locationService.startTracking(youMarker, mMap) {
+                            if(it.isNotEmpty()) {
+                                polyLineList.value = it.map { l ->
+                                    LatLng(
+                                        l.latitude,
+                                        l.longitude
+                                    )
+                                }
+                                currentPos.value =
+                                    LatLng(
+                                        polyLineList.value[0].latitude,
+                                        polyLineList.value[0].longitude
+                                    )
+                                cameraPositionState.position =
+                                    CameraPosition.fromLatLngZoom(currentPos.value, 15f)
+                                Log.v(TAG_ROUTE, "Length of locations ${it.size.toString()}")
+                                drawRoute(mMap, polyLineList, locationName, currentPos)
                             }
-                            currentPos.value =
-                                LatLng(
-                                    polyLineList.value[0].latitude,
-                                    polyLineList.value[0].longitude
-                                )
-                            cameraPositionState.position =
-                                CameraPosition.fromLatLngZoom(currentPos.value, 15f)
-                            Log.v(TAG_ROUTE, "Length of locations ${it.size.toString()}")
-                            drawRoute(mMap)
+                            findViewById<ComposeView>(R.id.my_composable).setContent {
+                                updatePosition(youMarker, locationService, mMap)
+                            }
                         }
                     }
                 }
             }
-            /*val track = Intent(this@MainActivity, TrackRoute::class.java)
-            startActivity(track)*/
         }
     }
 
@@ -259,24 +290,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, NavigationView.OnN
             MarkerOptions()
                 .position(LatLng(location.latitude,location.longitude))
                 .title("You")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.youmarker2))
         )
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude,location.longitude),15f))
         mMap = googleMap
+
+        findViewById<ComposeView>(R.id.my_composable).setContent {
+            updatePosition(youMarker, locationService, mMap)
+        }
     }
-    private fun drawRoute(googleMap: GoogleMap) {
-        googleMap.addPolyline(
-            PolylineOptions()
-                .color(0xff0000ff.toInt())
-                .pattern(listOf(Dash(2f)))
-                .addAll(polyLineList.value)
-        )
-        googleMap.addMarker(
-            MarkerOptions()
-                .title("Location: ${locationName.value}")
-                .snippet("Marker in ${locationName.value}")
-                .position(currentPos.value)
-        )
-    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -334,31 +357,5 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, NavigationView.OnN
         super.onLowMemory()
         mapview.onLowMemory()
     }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.nav_map -> {
-                Toast.makeText(this, "MAP clicked", Toast.LENGTH_SHORT).show()
-            }
-            R.id.nav_routes -> {
-                Toast.makeText(this, "ROUTES clicked", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, RoutesListActivity::class.java)
-                startActivity(intent)
-            }
-            R.id.nav_pics -> {
-                Toast.makeText(this, "PICS clicked", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, PhotosListActivity::class.java)
-                startActivity(intent)
-            }
-            R.id.nav_logout -> {
-                Toast.makeText(this, "Sign out clicked", Toast.LENGTH_SHORT).show()
-            }
-        }
-        drawerLayout.closeDrawer(GravityCompat.START)
-        return true
-    }
-
-
-
 }
 

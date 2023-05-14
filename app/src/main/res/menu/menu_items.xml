@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/map"
+        android:title="@string/map" />
+    <item
+        android:id="@+id/routes"
+        android:title="@string/routes" />
+    <item
+        android:id="@+id/pictures"
+        android:title="@string/pictures" />
+    <item
+        android:id="@+id/logout"
+        android:title="@string/logout" />
+</menu>

@@ -3,10 +3,14 @@ package groupassignment.tourshare.firebase
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import groupassignment.tourshare.ImageLists.PhotosListActivity
 import groupassignment.tourshare.MainActivity
 import groupassignment.tourshare.R
+import groupassignment.tourshare.RouteList.RoutesListActivity
 import groupassignment.tourshare.databinding.ActivityLoginBinding
 
 class Login : AppCompatActivity() {
@@ -41,5 +45,6 @@ class Login : AppCompatActivity() {
                 Toast.makeText(this, "Empty fields are not allowed", Toast.LENGTH_SHORT).show()
             }
         }
+
     }
 }

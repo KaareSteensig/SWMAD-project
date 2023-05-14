@@ -9,6 +9,7 @@
     <string name="e_mail">Email</string>
     <string name="spotshare">SpotShare</string>
     <string name="register">Register</string>
+    <string name="title_activity_detail">DetailActivity</string>
     <string name="map">Map</string>
     <string name="routes">Routes</string>
     <string name="pictures">Pictures</string>

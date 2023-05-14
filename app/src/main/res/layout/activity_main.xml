@@ -24,7 +24,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
         <ImageButton
             android:id="@+id/Play_Button"
             android:layout_width="60dp"

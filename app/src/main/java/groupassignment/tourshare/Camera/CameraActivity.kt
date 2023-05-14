@@ -1,23 +1,30 @@
 package groupassignment.tourshare.Camera
 
 import android.app.Activity
+import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.Editable
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import com.bumptech.glide.Glide
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import groupassignment.tourshare.R
+import groupassignment.tourshare.gps.Service
+import kotlinx.coroutines.launch
 import java.io.*
 import java.util.*
-
 
 
 class CameraActivity : ComponentActivity() {
@@ -30,6 +37,10 @@ class CameraActivity : ComponentActivity() {
 
     private var imagePath: String = ""
     private var photo : Bitmap? = null
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var geoCoder: Geocoder
+    private lateinit var locationService: Service
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +66,7 @@ class CameraActivity : ComponentActivity() {
                 Log.i("SAVING", "Image saved to ${imagePath}")
                 // Reload image withthis URI
             }
-            finish()
+            // Get the current Location:
 
         }
     }

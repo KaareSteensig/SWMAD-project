@@ -1,21 +1,28 @@
 package groupassignment.tourshare
 
-import android.app.Activity
+import android.Manifest
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
-import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.location.Geocoder
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.provider.Settings
 import android.os.PersistableBundle
+import android.provider.Settings
 import android.util.Log
+import android.view.Gravity
+import android.view.MenuItem
+import android.view.View
+import android.widget.*
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.ComposeView
+import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
@@ -46,6 +53,8 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import groupassignment.tourshare.Camera.CameraActivity
+import groupassignment.tourshare.ImageLists.PhotosListActivity
+import groupassignment.tourshare.RouteList.RoutesListActivity
 import groupassignment.tourshare.databinding.ActivityMainBinding
 import groupassignment.tourshare.gps.Service
 import groupassignment.tourshare.gps.TAG_ROUTE
@@ -67,7 +76,6 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private lateinit var mMap: GoogleMap
     private var youMarker: Marker? = null
 
-
     private val Camera_Permission_Code = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +84,19 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         geoCoder = Geocoder(this, Locale.getDefault())
         locationService = Service(fusedLocationClient, this, geoCoder)
         setContentView(R.layout.activity_main)
+
+
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navView = findViewById(R.id.nav_view)
+
+        toggle = ActionBarDrawerToggle(
+            this, drawerLayout, 0, 0
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        navView.setNavigationItemSelectedListener(this)
+
+
 
         // If the Camera Button is clicked:
         val openCameraButton: ImageButton = findViewById(R.id.Camera_Button)
@@ -144,10 +165,14 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                     }
                     R.id.routes -> {
                         Toast.makeText(this@MainActivity, "Routes Item Clicked", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, RoutesListActivity::class.java)
+                        startActivity(intent)
                         drawer.close()
                     }
                     R.id.logout -> {
                         Toast.makeText(this@MainActivity, "Logout Item Clicked", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, PhotosListActivity::class.java)
+                        startActivity(intent)
                         drawer.close()
                     }
                 }
@@ -332,6 +357,5 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         super.onLowMemory()
         mapview.onLowMemory()
     }
-
 }
 

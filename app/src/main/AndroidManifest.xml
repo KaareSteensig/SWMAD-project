@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" package="groupassignment.tourshare">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="groupassignment.tourshare">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-feature android:name="android.hardware.camera.any" />
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="SpotShare"
         android:supportsRtl="true"
         android:theme="@style/Theme.TourShare"
-        tools:targetApi="31"
-        android:enableOnBackInvokedCallback="true">
-
+        tools:targetApi="31">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
@@ -35,20 +34,39 @@
             android:resource="@array/preloaded_fonts" />
 
         <activity
-            android:allowBackup="false"
             android:name=".MainActivity"
+            android:allowBackup="false"
             android:exported="false"
-            android:theme="@style/Theme.TourShare"/>
+            android:theme="@style/Theme.TourShare" />
         <activity
             android:name=".Camera.CameraActivity"
             android:exported="false"
             android:label="@string/title_activity_camera"
             android:theme="@style/Theme.TourShare" />
+
+        <activity
+            android:name=".RouteList.RoutesListActivity"
+            android:allowBackup="false"
+            android:exported="false"
+            android:label="RoutesListActivity"
+            android:theme="@style/Theme.TourShare" />
+        <activity
+            android:name=".ImageLists.PhotosListActivity"
+            android:allowBackup="false"
+            android:exported="false"
+            android:label="PhotosListActivity"
+            android:theme="@style/Theme.TourShare" />
+        <activity
+            android:name=".ImageLists.DetailActivity"
+            android:allowBackup="false"
+            android:exported="false"
+            android:label="DetailActivity"/>
         <activity
             android:name=".firebase.Login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

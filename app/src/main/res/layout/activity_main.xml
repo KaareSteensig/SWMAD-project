@@ -103,7 +103,6 @@
             android:id="@+id/Menu_Button"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginBottom="668dp"
             android:adjustViewBounds="true"
             android:background="#01395D"
             android:contentDescription="button"
@@ -112,15 +111,20 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/textView"
-            android:layout_width="104dp"
-            android:layout_height="48dp"
-            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:fontFamily="@font/amaranth"
             android:text="@string/route"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="#FFFFFF"
+            android:textSize="24sp"
             android:visibility="visible"
             app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toTopOf="@+id/Map_View"

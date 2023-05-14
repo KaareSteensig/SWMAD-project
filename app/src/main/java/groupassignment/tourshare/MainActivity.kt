@@ -37,6 +37,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.ImageLists.PhotosListActivity
 import groupassignment.tourshare.RouteList.RoutesListActivity
+import groupassignment.tourshare.firebase.Login
 import groupassignment.tourshare.gps.Service
 import groupassignment.tourshare.gps.TAG_ROUTE
 import groupassignment.tourshare.gps.drawRoute
@@ -121,23 +122,25 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                 when (it.itemId) {
                     R.id.nav_map -> {
                         //what should happen:
-                        Toast.makeText(this@MainActivity, "Map Item Clicked", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this@MainActivity, "Map Item Clicked", Toast.LENGTH_SHORT).show()
                         drawer.close()
                     }
                     R.id.nav_pics -> {
-                        Toast.makeText(this@MainActivity, "Pictures Item Clicked", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this@MainActivity, "Pictures Item Clicked", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this, PhotosListActivity::class.java)
                         startActivity(intent)
                         drawer.close()
                     }
                     R.id.nav_routes -> {
-                        Toast.makeText(this@MainActivity, "Routes Item Clicked", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this@MainActivity, "Routes Item Clicked", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this, RoutesListActivity::class.java)
                         startActivity(intent)
                         drawer.close()
                     }
                     R.id.nav_logout -> {
-                        Toast.makeText(this@MainActivity, "Logout Item Clicked", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(this@MainActivity, "Logout Item Clicked", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, Login::class.java)
+                        startActivity(intent)
                         drawer.close()
                     }
                 }

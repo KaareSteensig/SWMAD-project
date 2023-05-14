@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.MenuItem
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -18,39 +19,51 @@ import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.MainActivity
 import groupassignment.tourshare.R
 import groupassignment.tourshare.RouteList.RoutesListActivity
+import groupassignment.tourshare.firebase.Login
 
 
-class PhotosListActivity : AppCompatActivity() , NavigationView.OnNavigationItemSelectedListener {
-
-    //lateinit var toolbar: Toolbar
-    lateinit var drawerLayout: DrawerLayout
-    lateinit var navView: NavigationView
+class PhotosListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.listphotos)
 
         val openMenuButton: ImageButton = findViewById(R.id.Menu_Button2)
-        openMenuButton.setOnClickListener {
-            Log.i("Main", "You clicked the MENU button")
+        openMenuButton.setOnClickListener{
+            val drawer: DrawerLayout = findViewById(R.id.drawerLayout)
+            drawer.open()
+            val navView: NavigationView = findViewById(R.id.navView)
+            navView.setNavigationItemSelectedListener {
+                when (it.itemId) {
+                    R.id.nav_map -> {
+                        //what should happen:
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                        drawer.close()
+                    }
+                    R.id.nav_pics -> {
+                        drawer.close()
+                    }
+                    R.id.nav_routes -> {
+                        val intent = Intent(this, RoutesListActivity::class.java)
+                        startActivity(intent)
+                        drawer.close()
+                    }
+                    R.id.nav_logout -> {
+                        val intent = Intent(this, Login::class.java)
+                        startActivity(intent)
+                        drawer.close()
+                    }
+                }
+                true
+            }
         }
-
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navView = findViewById(R.id.nav_view)
-
-        val toggle = ActionBarDrawerToggle(
-            this, drawerLayout, 0, 0
-        )
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-        navView.setNavigationItemSelectedListener(this)
-
 
         // on below line we are initializing
         // our views with their ids.
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
 
         // on below line we are initializing our list
-       val  PhotoList = ArrayList<Photo>()
+        val PhotoList = ArrayList<Photo>()
 
         // on below line we are creating a variable
         // for our grid layout manager and specifying
@@ -87,30 +100,5 @@ class PhotosListActivity : AppCompatActivity() , NavigationView.OnNavigationItem
             startActivity(DetailView)
         }
 
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.nav_map -> {
-                Toast.makeText(this, "MAP clicked", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-            }
-            R.id.nav_routes -> {
-                Toast.makeText(this, "ROUTES clicked", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, RoutesListActivity::class.java)
-                startActivity(intent)
-            }
-            R.id.nav_pics -> {
-                Toast.makeText(this, "PICS clicked", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, PhotosListActivity::class.java)
-                startActivity(intent)
-            }
-            R.id.nav_logout -> {
-                Toast.makeText(this, "Sign out clicked", Toast.LENGTH_SHORT).show()
-            }
-        }
-        drawerLayout.closeDrawer(GravityCompat.START)
-        return true
     }
 }

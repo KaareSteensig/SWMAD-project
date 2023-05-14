@@ -14,6 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.MainActivity
 import groupassignment.tourshare.R
 import groupassignment.tourshare.RouteList.RoutesListActivity
@@ -75,6 +76,16 @@ class PhotosListActivity : AppCompatActivity() , NavigationView.OnNavigationItem
         // on below line we are notifying adapter
         // that data has been updated.
         photoRVAdapter.notifyDataSetChanged()
+
+
+        photoRVAdapter.onItemClick = {
+
+            // do something with your item
+            Log.d("PhotosListActivity: ", " Yic clicked on ${it.title}")
+            val DetailView = Intent(this@PhotosListActivity, DetailActivity::class.java)
+            DetailView.putExtra("photo", it)
+            startActivity(DetailView)
+        }
 
     }
 

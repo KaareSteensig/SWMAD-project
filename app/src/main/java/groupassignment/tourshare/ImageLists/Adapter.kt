@@ -1,5 +1,6 @@
 package groupassignment.tourshare.ImageLists
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +11,11 @@ import groupassignment.tourshare.R
 
 // on below line we are creating
 // a course rv adapter class.
-    class Adapter(
-        // on below line we are passing variables
-        // as course list and context
-    private val photoList: ArrayList<Photo>,
-    private val context: Context
-    ) : RecyclerView.Adapter<Adapter.CourseViewHolder>() {
-        override fun onCreateViewHolder(
+    class Adapter(private val photoList: ArrayList<Photo>, private val context: Context) : RecyclerView.Adapter<Adapter.CourseViewHolder>() {
+
+    var onItemClick : ((Photo)->Unit)? = null
+
+    override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
         ): Adapter.CourseViewHolder {
@@ -34,8 +33,14 @@ import groupassignment.tourshare.R
 
         override fun onBindViewHolder(holder: Adapter.CourseViewHolder, position: Int) {
             // on below line we are setting data to our text view and our image view.
+            val ph = photoList[position]
             holder.courseNameTV.text = photoList.get(position).title
             holder.courseIV.setImageResource(photoList.get(position).image)
+            holder.itemView.setOnClickListener {
+                Log.d("onBindViewHolder: ", " CLICKED")
+                onItemClick?.invoke(ph)
+            }
+
         }
 
         override fun getItemCount(): Int {

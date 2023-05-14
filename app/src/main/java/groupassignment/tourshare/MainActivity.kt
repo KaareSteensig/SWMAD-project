@@ -241,8 +241,8 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                                 cameraPositionState.position =
                                     CameraPosition.fromLatLngZoom(currentPos.value, 15f)
                                 Log.v(TAG_ROUTE, "Length of locations ${it.size.toString()}")
-                                drawRoute(mMap, polyLineList, locationName, currentPos)
                             }
+                            drawRoute(mMap, polyLineList, locationName, currentPos)
                             findViewById<ComposeView>(R.id.my_composable).setContent {
                                 updatePosition(youMarker, locationService, mMap)
                             }

@@ -61,8 +61,8 @@ class Service(
     suspend fun startTracking(youMarker: Marker?, mMap: GoogleMap, routeCallBack: (locations: List<Location>) -> Unit) {
         doTrack = true
         doPause = false
+        track.clear()
         while (doTrack) {
-            track.clear()
             if (doPause)
             {
                 delay(1000L)

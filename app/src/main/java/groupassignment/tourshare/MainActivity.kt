@@ -12,32 +12,14 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.provider.Settings
 import android.util.Log
-import android.view.Gravity
-import android.view.MenuItem
 import android.view.View
-import android.widget.*
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
-import androidx.core.view.GravityCompat
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.Button
-import android.view.View
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.widget.ActionMenuView
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.ComposeView
-import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import backend.RepositoryMenus
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -55,12 +37,10 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.ImageLists.PhotosListActivity
 import groupassignment.tourshare.RouteList.RoutesListActivity
-import groupassignment.tourshare.databinding.ActivityMainBinding
 import groupassignment.tourshare.gps.Service
 import groupassignment.tourshare.gps.TAG_ROUTE
 import groupassignment.tourshare.gps.drawRoute
 import groupassignment.tourshare.gps.updatePosition
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -76,27 +56,12 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private lateinit var mMap: GoogleMap
     private var youMarker: Marker? = null
 
-    private val Camera_Permission_Code = 1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         geoCoder = Geocoder(this, Locale.getDefault())
         locationService = Service(fusedLocationClient, this, geoCoder)
         setContentView(R.layout.activity_main)
-
-
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navView = findViewById(R.id.nav_view)
-
-        toggle = ActionBarDrawerToggle(
-            this, drawerLayout, 0, 0
-        )
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-        navView.setNavigationItemSelectedListener(this)
-
-
 
         // If the Camera Button is clicked:
         val openCameraButton: ImageButton = findViewById(R.id.Camera_Button)
@@ -154,25 +119,25 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             val navView: NavigationView = findViewById(R.id.navView)
             navView.setNavigationItemSelectedListener {
                 when (it.itemId) {
-                    R.id.map -> {
+                    R.id.nav_map -> {
                         //what should happen:
                         Toast.makeText(this@MainActivity, "Map Item Clicked", Toast.LENGTH_SHORT).show()
                         drawer.close()
                     }
-                    R.id.pictures -> {
+                    R.id.nav_pics -> {
                         Toast.makeText(this@MainActivity, "Pictures Item Clicked", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, PhotosListActivity::class.java)
+                        startActivity(intent)
                         drawer.close()
                     }
-                    R.id.routes -> {
+                    R.id.nav_routes -> {
                         Toast.makeText(this@MainActivity, "Routes Item Clicked", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this, RoutesListActivity::class.java)
                         startActivity(intent)
                         drawer.close()
                     }
-                    R.id.logout -> {
+                    R.id.nav_logout -> {
                         Toast.makeText(this@MainActivity, "Logout Item Clicked", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this, PhotosListActivity::class.java)
-                        startActivity(intent)
                         drawer.close()
                     }
                 }

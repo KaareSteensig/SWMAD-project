@@ -154,7 +154,7 @@
         android:id="@+id/navView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        app:menu="@menu/menu_items"
+        app:menu="@menu/menu_layout"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"/>
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -1,147 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#01395D"
+    android:id="@+id/drawerLayout"
     tools:context=".MainActivity">
-
-    <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/my_composable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="411dp"
-        android:layout_marginBottom="731dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <ImageButton
-        android:id="@+id/Play_Button"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="15dp"
-        android:adjustViewBounds="true"
-        android:background="#01395D"
-        android:contentDescription="button"
-        android:scaleType="fitCenter"
-        android:src="@drawable/baseline_play_circle_outline_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageButton
-        android:id="@+id/Continue_Button"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="15dp"
-        android:adjustViewBounds="true"
-        android:background="#01395D"
-        android:contentDescription="button"
-        android:scaleType="fitCenter"
-        android:src="@drawable/baseline_play_circle_outline_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageButton
-        android:id="@+id/Pause_Button"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="15dp"
-        android:adjustViewBounds="true"
-        android:background="#01395D"
-        android:contentDescription="button"
-        android:scaleType="fitCenter"
-        android:src="@drawable/baseline_pause_circle_outline_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageButton
-        android:id="@+id/Stop_Button"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="15dp"
-        android:adjustViewBounds="true"
-        android:background="#01395D"
-        android:contentDescription="button"
-        android:scaleType="fitCenter"
-        android:src="@drawable/baseline_stop_circle_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/Map_View"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="580dp"
-        android:layout_marginBottom="92dp"
-        android:adjustViewBounds="true"
-        android:background="#01395D"
-        android:contentDescription="mapview"
-        android:scaleType="centerInside"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Menu_Button" />
+        android:layout_height="match_parent"
+        android:background="#01395D">
 
-    <ImageButton
-        android:id="@+id/Menu_Button"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="668dp"
-        android:adjustViewBounds="true"
-        android:background="#01395D"
-        android:contentDescription="button"
-        android:scaleType="fitCenter"
-        android:src="@drawable/baseline_menu_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/my_composable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="411dp"
+            android:layout_marginBottom="731dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="104dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="5dp"
-        android:text="Route"
-        android:textColor="#FFFFFF"
-        android:visibility="visible"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toTopOf="@+id/Map_View"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/Menu_Button"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
 
-    <ImageButton
-        android:id="@+id/Camera_Button"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="15dp"
-        android:adjustViewBounds="true"
-        android:background="#01395D"
-        android:contentDescription="button"
-        android:scaleType="fitCenter"
-        android:src="@drawable/baseline_camera_alt_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/Stop_Button"
-        app:layout_constraintHorizontal_bias="0.472"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Map_View"
-        app:layout_constraintVertical_bias="1.0" />
+        <ImageButton
+            android:id="@+id/Play_Button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="15dp"
+            android:adjustViewBounds="true"
+            android:background="#01395D"
+            android:contentDescription="button"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_play_circle_outline_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.8"
+            app:layout_constraintStart_toStartOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageButton
+            android:id="@+id/Continue_Button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="15dp"
+            android:adjustViewBounds="true"
+            android:background="#01395D"
+            android:contentDescription="button"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_play_circle_outline_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.8"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageButton
+            android:id="@+id/Pause_Button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="15dp"
+            android:adjustViewBounds="true"
+            android:background="#01395D"
+            android:contentDescription="button"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_pause_circle_outline_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.8"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageButton
+            android:id="@+id/Stop_Button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="15dp"
+            android:adjustViewBounds="true"
+            android:background="#01395D"
+            android:contentDescription="button"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_stop_circle_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/Map_View"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="580dp"
+            android:layout_marginBottom="92dp"
+            android:adjustViewBounds="true"
+            android:background="#01395D"
+            android:contentDescription="mapview"
+            android:scaleType="centerInside"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Menu_Button" />
+
+        <ImageButton
+            android:id="@+id/Menu_Button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="668dp"
+            android:adjustViewBounds="true"
+            android:background="#01395D"
+            android:contentDescription="button"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_menu_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="104dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="5dp"
+            android:text="@string/route"
+            android:textColor="#FFFFFF"
+            android:visibility="visible"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toTopOf="@+id/Map_View"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/Menu_Button"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/Camera_Button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="15dp"
+            android:adjustViewBounds="true"
+            android:background="#01395D"
+            android:contentDescription="button"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_camera_alt_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/Stop_Button"
+            app:layout_constraintHorizontal_bias="0.472"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Map_View"
+            app:layout_constraintVertical_bias="1.0" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:menu="@menu/menu_items"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"/>
+</androidx.drawerlayout.widget.DrawerLayout>

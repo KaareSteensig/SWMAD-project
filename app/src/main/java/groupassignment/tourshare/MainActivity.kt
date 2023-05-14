@@ -17,16 +17,19 @@ import android.provider.Settings
 import android.os.PersistableBundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.ActionMenuView
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import backend.RepositoryMenus
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -35,6 +38,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
+import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.compose.*
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -42,6 +46,7 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import groupassignment.tourshare.Camera.CameraActivity
+import groupassignment.tourshare.databinding.ActivityMainBinding
 import groupassignment.tourshare.gps.Service
 import groupassignment.tourshare.gps.TAG_ROUTE
 import groupassignment.tourshare.gps.drawRoute
@@ -51,7 +56,6 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class MainActivity : ComponentActivity(), OnMapReadyCallback  {
-    private val repository = RepositoryMenus()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var geoCoder: Geocoder
     private lateinit var locationService: Service
@@ -62,7 +66,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private lateinit var currentPos: MutableState<LatLng>
     private lateinit var mMap: GoogleMap
     private var youMarker: Marker? = null
-    private var mapInitiated: Boolean = false
+
 
     private val Camera_Permission_Code = 1
 
@@ -122,14 +126,33 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             }).onSameThread().check()
         }
 
-
-
-
-        //val menu: ActionMenuView = findViewById(R.id.Menu_View)
-
         val openMenuButton: ImageButton = findViewById(R.id.Menu_Button)
         openMenuButton.setOnClickListener{
-            //menu.showOverflowMenu()
+            val drawer: DrawerLayout = findViewById(R.id.drawerLayout)
+            drawer.open()
+            val navView: NavigationView = findViewById(R.id.navView)
+            navView.setNavigationItemSelectedListener {
+                when (it.itemId) {
+                    R.id.map -> {
+                        //what should happen:
+                        Toast.makeText(this@MainActivity, "Map Item Clicked", Toast.LENGTH_SHORT).show()
+                        drawer.close()
+                    }
+                    R.id.pictures -> {
+                        Toast.makeText(this@MainActivity, "Pictures Item Clicked", Toast.LENGTH_SHORT).show()
+                        drawer.close()
+                    }
+                    R.id.routes -> {
+                        Toast.makeText(this@MainActivity, "Routes Item Clicked", Toast.LENGTH_SHORT).show()
+                        drawer.close()
+                    }
+                    R.id.logout -> {
+                        Toast.makeText(this@MainActivity, "Logout Item Clicked", Toast.LENGTH_SHORT).show()
+                        drawer.close()
+                    }
+                }
+                true
+            }
         }
 
         mapview = findViewById(R.id.Map_View)
@@ -251,6 +274,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             updatePosition(youMarker, locationService, mMap)
         }
     }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,

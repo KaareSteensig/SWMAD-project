@@ -161,9 +161,9 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
             requestPermissions(permission, 2)
-            locationService.setLocationOn()
             if((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION ) == PackageManager.PERMISSION_GRANTED)
                 && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                locationService.setLocationOn()
             }
         }
         mapview.onCreate(savedInstanceState)

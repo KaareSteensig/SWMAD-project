@@ -77,6 +77,7 @@ class Service(
                 Log.v(this.javaClass.name, "tracking location")
                 val location: Location = getCurrentLocation()
                 youMarker?.position = LatLng(location.latitude,location.longitude)
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude,location.longitude),15f))
                 Log.v(this.javaClass.name, "Updated user location")
             }
         }

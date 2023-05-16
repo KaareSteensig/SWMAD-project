@@ -53,8 +53,7 @@ import groupassignment.tourshare.gps.updatePosition
 import kotlinx.coroutines.launch
 import java.util.*
 
-
-class MainActivity : ComponentActivity(), OnMapReadyCallback {
+class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var geoCoder: Geocoder
     private lateinit var locationService: Service
@@ -85,11 +84,10 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_main)
 
         // Get current user
-        val user = FirebaseAuth.getInstance().currentUser
-        val uid = user!!.uid
+        val currentUserID = FirebaseAuth.getInstance().currentUser?.uid
 
         // Init firebase
-        routeRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference.child("routes")
+        routeRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference
 
         // If the Camera Button is clicked:
         val openCameraButton: ImageButton = findViewById(R.id.Camera_Button)
@@ -109,6 +107,9 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
                             /*Toast.makeText(this@MainActivity,"You have permissions now",Toast.LENGTH_SHORT                           ).show()
                             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                             startActivityForResult(intent, camera_requestCode)*/
+                            val CameraView = Intent(this@MainActivity, CameraActivity::class.java)
+                            CameraView.putExtra("uid", currentUserID)
+                            startActivity(CameraView)
 
                             findViewById<ComposeView>(R.id.my_composable).setContent {
                                 val scope = rememberCoroutineScope()
@@ -129,7 +130,6 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
                         }
                     }
                 }
-
                 // What to do when we have not all permissions:
                 override fun onPermissionRationaleShouldBeShown(
                     p0: MutableList<PermissionRequest>?,
@@ -289,7 +289,9 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
                             drawRoute(mMap, polyLineList, locationName, currentPos)
 
                             //Save the route to the firebase database
-                            saveRouteToDatabase(polyLineList)
+                            if (currentUserID != null) {
+                                saveRouteToDatabase(polyLineList, currentUserID)
+                            }
 
                             findViewById<ComposeView>(R.id.my_composable).setContent {
                                 updatePosition(youMarker, locationService, mMap)
@@ -391,20 +393,21 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
         mapview.onLowMemory()
     }
 
-    private fun saveRouteToDatabase(polyLineListJson: MutableState<List<LatLng>>) {
+
+    private fun saveRouteToDatabase(polyLineListJson: MutableState<List<LatLng>>, uid: String) {
         // Convert the polyline list from JSON to a List of LatLng objects
         val polyLineList = polyLineListJson.value
 
         // Create a unique key for the new route entry
-        val newRouteKey = routeRefDB.push().key
+        val newRouteKey = routeRefDB.child(uid).child("routes").push().key
 
         // Create a HashMap to store the route data
         val routeData = HashMap<String, Any>()
         routeData["route"] = polyLineList
 
-        // Upload the route data to the "routes" node with the unique key
+        // Upload the route data to the "users/uid/routes" node with the unique key
         if (newRouteKey != null) {
-            routeRefDB.child(newRouteKey).setValue(routeData)
+            routeRefDB.child("users").child(uid).child("routes").child(newRouteKey).setValue(routeData)
                 .addOnSuccessListener {
                     // Route uploaded successfully
                     Log.i("SaveRouteToDatabase", "Route uploaded successfully.")

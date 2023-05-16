@@ -16,6 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -32,8 +33,13 @@ import groupassignment.tourshare.firebase.Login
 
 class PhotosListActivity : ComponentActivity() {
     // Initialize Firebase references
-    private val imagesRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference.child("images")
-    private val imagesRefStorage = FirebaseStorage.getInstance().reference.child("images")
+    private val currentUser = FirebaseAuth.getInstance().currentUser
+    private val uid = currentUser?.uid
+    private val imagesRefDB = uid?.let {
+        FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app")
+        .reference.child("users").child(it).child("images")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.listphotos)
@@ -139,7 +145,7 @@ class PhotosListActivity : ComponentActivity() {
         }
 
         // Attach the ValueEventListener to the database reference
-        imagesRefDB.addValueEventListener(imagesListener)
+        imagesRefDB?.addValueEventListener(imagesListener)
 
     }
 }

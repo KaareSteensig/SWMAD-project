@@ -55,9 +55,7 @@ class CameraActivity : ComponentActivity() {
     private lateinit var geoCoder: Geocoder
     private lateinit var locationService: Service
 
-    //private val uid: String? = intent.getStringExtra("uid")
-    //private val imagesRefDB = uid?.let { FirebaseDatabase.getInstance().getReference("images") }
-    //private val imagesRefStorage = uid?.let { FirebaseStorage.getInstance().getReference("images") }
+    //Firebase
     private lateinit var imagesRefDB: DatabaseReference
     private lateinit var imagesRefStorage: StorageReference
 
@@ -73,8 +71,9 @@ class CameraActivity : ComponentActivity() {
 
         // Open the Camera of the Phone
         // Init firebase
-        imagesRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference.child("images")
+        imagesRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference
         imagesRefStorage = FirebaseStorage.getInstance().getReference("images")
+        val uid = intent.getStringExtra("uid")
 
         // Open Camera of the Phone
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -93,7 +92,9 @@ class CameraActivity : ComponentActivity() {
             photo?.let {
                 imagePath = saveImageToInternalStorage(photo!!)
                 Log.i("SAVING", "Image saved to $imagePath")
-                uploadImageToStorage(imagePath, title, description)
+                if (uid != null) {
+                    saveImageToDatabase(imagePath, title, description, uid)
+                }
                 // Reload image withthis URI
                 //Log.i("SAVING", "Image saved to ${imagePath}")
 
@@ -151,25 +152,29 @@ class CameraActivity : ComponentActivity() {
         return file.absolutePath
     }
 
-    private fun uploadImageToStorage(imagePath: String, title: String, description: String) {
+    private fun saveImageToDatabase(imagePath: String, title: String, description: String, uid: String) {
         val file = Uri.fromFile(File(imagePath))
         val imageRef = imagesRefStorage.child(file.lastPathSegment!!)
 
         imageRef.putFile(file).addOnSuccessListener {
             imageRef.downloadUrl.addOnSuccessListener {
-                val key = imagesRefDB.push().key!!
-                val image = groupassignment.tourshare.firebase.Image(title, description, imagePath)
-
-                imagesRefDB.child(key).setValue(image)
-                    .addOnCompleteListener{
-                    }.addOnFailureListener{err ->
-                        Toast.makeText(this, "Error ${err.message}", Toast.LENGTH_LONG).show()
-                    }
-                Log.i("Camera Upload", "Image uploaded successfully.")
+                val newImageKey = imagesRefDB.child("users").child(uid).child("images").push().key
+                if (newImageKey != null) {
+                    val image =
+                        groupassignment.tourshare.firebase.Image(title, description, imagePath)
+                    imagesRefDB.child("users").child(uid).child("images").child(newImageKey)
+                        .setValue(image)
+                        .addOnCompleteListener {
+                            Log.i("UploadToStorage", "Image uploaded successfully.")
+                        }.addOnFailureListener { err ->
+                            Log.e("UploadToStorage", "Error uploading image: ", err)
+                        }
+                }else{
+                    Log.e("UploadToStorage", "Error generating key.")
+                }
+            }.addOnFailureListener { exception ->
+                Log.e("UploadToStorage", "Error uploading image: ", exception)
             }
-        }.addOnFailureListener { exception ->
-            Log.e("CameraActivity Upload", "Error uploading image: ", exception)
         }
     }
-
 }

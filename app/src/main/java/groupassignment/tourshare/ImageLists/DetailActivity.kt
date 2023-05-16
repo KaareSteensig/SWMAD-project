@@ -57,9 +57,6 @@ class DetailActivity : ComponentActivity() {
         backButton.setOnClickListener {
             finish()
         }
-
-
-
     }
 }
 

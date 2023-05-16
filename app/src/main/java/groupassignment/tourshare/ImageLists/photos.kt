@@ -5,16 +5,26 @@ import android.os.Parcel
 import android.os.Parcelable
 
 
-data class Photo(val title : String, val image: Int): Parcelable {
+// Data class to handle the photos
+// implements the interface Parcelable, so it can be passed by Intent.putextra
+data class Photo(var title : String, val uri: String, var long: Double, var lat: Double, var description: String, var routeNr: Int): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
-        parcel.readInt()
+        parcel.readString()!!,
+        parcel.readDouble()!!,
+        parcel.readDouble()!!,
+        parcel.readString()!!,
+        parcel.readInt()!!
     ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
-        parcel.writeInt(image)
+        parcel.writeString(uri)
+        parcel.writeDouble(long)
+        parcel.writeDouble(lat)
+        parcel.writeString(description)
+        parcel.writeInt(routeNr)
     }
 
     override fun describeContents(): Int {
@@ -31,4 +41,3 @@ data class Photo(val title : String, val image: Int): Parcelable {
         }
     }
 }
-//data class Photo(val title : String, val description: String, val image: Bitmap, val long: Double, val lat: Double)

@@ -14,7 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun updatePosition(youMarker: Marker?, locationService: Service, mMap: GoogleMap) {
+fun updatePosition(youMarker: Marker?,  locationService: Service, mMap: GoogleMap) {
     val scope = rememberCoroutineScope()
     LaunchedEffect(locationService.locationOn.value) {
         scope.launch {

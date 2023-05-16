@@ -22,11 +22,14 @@ import groupassignment.tourshare.RouteList.RoutesListActivity
 import groupassignment.tourshare.firebase.Login
 
 
+// This activity displays all images in a scrollable grid Layout with a RecyclerView
+
 class PhotosListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.listphotos)
 
+        // handle Menu Button
         val openMenuButton: ImageButton = findViewById(R.id.Menu_Button2)
         openMenuButton.setOnClickListener{
             val drawer: DrawerLayout = findViewById(R.id.drawerLayout)
@@ -35,7 +38,6 @@ class PhotosListActivity : ComponentActivity() {
             navView.setNavigationItemSelectedListener {
                 when (it.itemId) {
                     R.id.nav_map -> {
-                        //what should happen:
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                         drawer.close()
@@ -58,43 +60,39 @@ class PhotosListActivity : ComponentActivity() {
             }
         }
 
-        // on below line we are initializing
-        // our views with their ids.
+
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
 
-        // on below line we are initializing our list
+        // initializing the list
         val PhotoList = ArrayList<Photo>()
 
-        // on below line we are creating a variable
-        // for our grid layout manager and specifying
-        // column count as 2
+        // creating a variable for our grid layout manager and specifying the column count as 2
         val layoutManager = GridLayoutManager(this, 2)
 
         recyclerView.layoutManager = layoutManager
 
-        // on below line we are initializing our adapter
+        // initialize our adapter
         val photoRVAdapter = Adapter(PhotoList, this)
 
-        // on below line we are setting
-        // adapter to our recycler view.
+        // set the adapter to the recycler view.
         recyclerView.adapter = photoRVAdapter
 
         // on below line we are adding data to our list
-        PhotoList.add(Photo("Bild1", R.drawable.map1))
-        PhotoList.add(Photo("Bild2", R.drawable.menu))
-        PhotoList.add(Photo("Bild3", R.drawable.play))
-        PhotoList.add(Photo("Bild4", R.drawable.stop))
-        PhotoList.add(Photo("Bild5", R.drawable.pause))
+        // The List contains data of the DataClass photo (photos.kt)
+        // All items in the List will we displayed
+        PhotoList.add(Photo("Bild1", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg", 1.1 , 2.2, "nice picture", 1))
+        PhotoList.add(Photo("Bild2", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg",.1 , 2.2, "cool picture", 1))
+        PhotoList.add(Photo("Bild3", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg", .1 , 2.2, "nice picture", 1))
+        PhotoList.add(Photo("Bild4", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg",.1 , 2.2, "cool picture", 1))
+        PhotoList.add(Photo("Bild5", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg",.1 , 2.2, "nice picture", 1))
 
-        // on below line we are notifying adapter
-        // that data has been updated.
+        // notify the adapter that data has been updated.
         photoRVAdapter.notifyDataSetChanged()
 
 
+        // Handles the click on a image-item:
+        // Show the Deta View of the Image
         photoRVAdapter.onItemClick = {
-
-            // do something with your item
-            Log.d("PhotosListActivity: ", " Yic clicked on ${it.title}")
             val DetailView = Intent(this@PhotosListActivity, DetailActivity::class.java)
             DetailView.putExtra("photo", it)
             startActivity(DetailView)

@@ -1,13 +1,9 @@
 package groupassignment.tourshare.Camera
 
 import android.app.Activity
-import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
-import android.location.Geocoder
-import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -15,17 +11,19 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import com.bumptech.glide.Glide
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
+import groupassignment.tourshare.ImageLists.Photo
+import groupassignment.tourshare.MainActivity
 import groupassignment.tourshare.R
-import groupassignment.tourshare.gps.Service
-import kotlinx.coroutines.launch
 import java.io.*
 import java.util.*
 
+
+// Activity with  three functions:
+// 1. opens the camera of the phone
+// 2. displays the taken image and provides ui-elements, so the user can type in the title and description of the image
+// 3. Saves the image in the storage of the phone and returns to main activity with the photo as photo-DataClass as Extra
 
 class CameraActivity : ComponentActivity() {
 
@@ -38,39 +36,49 @@ class CameraActivity : ComponentActivity() {
     private var imagePath: String = ""
     private var photo : Bitmap? = null
 
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var geoCoder: Geocoder
-    private lateinit var locationService: Service
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
 
-        // Open Camera of the Phone
+        // get the infos about the position from MainActivity
+        val long: Double = intent.getDoubleExtra("long", 4.1)
+        val lat: Double = intent.getDoubleExtra("lat", 4.21)
+        val routeNr: Int = intent.getIntExtra("routeNr", 1)
+
+
+        // Open the Camera of the Phone
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(intent, camera_requestCode)
 
-        // handle the Buttons
+        // handle the ui-elements
         val safeButton: Button = findViewById(R.id.safe_button)
         safeButton.setOnClickListener {
             val title_text = findViewById<EditText>(R.id.title_text)
             val title = title_text.text.toString()
-            Log.i("TITLE: ", title)
 
             val desc_text = findViewById<EditText>(R.id.descr_text)
             val description = desc_text.text.toString()
-            Log.i("description: ", description)
+
+            // saves the image to the storage
             photo?.let {
                 imagePath = saveImageToInternalStorage(photo!!)
-                Log.i("SAVING", "Image saved to ${imagePath}")
-                // Reload image withthis URI
+                //Log.i("SAVING", "Image saved to ${imagePath}")
+
+
             }
-            // Get the current Location:
+
+            // Create a new photo and submit it back to the main activity
+            val backintent = Intent()
+            val photo = Photo(title, imagePath, long, lat, description, routeNr)
+            backintent.putExtra("photo", photo)
+            setResult(RESULT_OK, backintent)
+            finish()
 
         }
     }
 
+    // Display the taken photo in the imageView
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
@@ -90,6 +98,8 @@ class CameraActivity : ComponentActivity() {
         }
     }
 
+    // Saves the taken image to the storage by opening a new OutputStream
+    // The path is random, because the title may include characters which are not allowed in a path
     private fun saveImageToInternalStorage(bitmap: Bitmap): String
     {
         val wrapper = ContextWrapper(applicationContext)
@@ -108,7 +118,6 @@ class CameraActivity : ComponentActivity() {
         // return directory and name of file
         return file.absolutePath
     }
-
 
 }
 

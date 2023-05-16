@@ -107,8 +107,13 @@ class PhotosListActivity : ComponentActivity() {
                     val title = imageSnapshot.child("title").value as? String ?: ""
                     val description = imageSnapshot.child("description").value as? String ?: ""
 
+                    //Todo: retreive data
+                    val long = 1.1
+                    val lat = 1.2
+                    val routeNr = 1
+
                     // Create a Photo object with the retrieved data
-                    val photo = Photo(title, description, url)
+                    val photo = Photo(title, url, long,  lat, description, routeNr )
 
                     // Add the photo to the list
                     PhotoList.add(photo)

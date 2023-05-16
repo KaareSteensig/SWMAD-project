@@ -1,6 +1,7 @@
 package groupassignment.tourshare.Camera
 
 import android.app.Activity
+import android.app.Service
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap

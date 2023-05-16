@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import groupassignment.tourshare.R
 
 // on below line we are creating
@@ -35,7 +36,9 @@ import groupassignment.tourshare.R
             // on below line we are setting data to our text view and our image view.
             val ph = photoList[position]
             holder.courseNameTV.text = photoList.get(position).title
-            holder.courseIV.setImageResource(photoList.get(position).image)
+            Glide.with(context)
+                .load(ph.imageUrl)
+                .into(holder.courseIV)
             holder.itemView.setOnClickListener {
                 Log.d("onBindViewHolder: ", " CLICKED")
                 onItemClick?.invoke(ph)

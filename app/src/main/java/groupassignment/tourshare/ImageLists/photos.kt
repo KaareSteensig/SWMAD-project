@@ -5,16 +5,17 @@ import android.os.Parcel
 import android.os.Parcelable
 
 
-data class Photo(val title : String, val image: Int): Parcelable {
+data class Photo(val title: String, val description: String, val imageUrl: String) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
-        parcel.readInt()
-    ) {
-    }
+        parcel.readString()!!,
+        parcel.readString()!!
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
-        parcel.writeInt(image)
+        parcel.writeString(description)
+        parcel.writeString(imageUrl)
     }
 
     override fun describeContents(): Int {
@@ -31,4 +32,5 @@ data class Photo(val title : String, val image: Int): Parcelable {
         }
     }
 }
+
 //data class Photo(val title : String, val description: String, val image: Bitmap, val long: Double, val lat: Double)

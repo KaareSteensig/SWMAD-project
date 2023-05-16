@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.bumptech.glide.Glide
 import groupassignment.tourshare.ImageLists.ui.theme.TourShareTheme
 import groupassignment.tourshare.R
 
@@ -26,9 +27,13 @@ class DetailActivity : ComponentActivity() {
         {
             val titleTextView:TextView = findViewById(R.id.imagetitle)
             val photoImageView:ImageView = findViewById(R.id.photo)
+            //Need description?
 
             titleTextView.text = photo.title
-            photoImageView.setImageResource(photo.image)
+            
+            Glide.with(this)
+                .load(photo.imageUrl)
+                .into(photoImageView)
 
         }
 

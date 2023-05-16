@@ -1,5 +1,6 @@
 package groupassignment.tourshare.ImageLists
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +16,11 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.MainActivity
 import groupassignment.tourshare.R
@@ -23,6 +29,9 @@ import groupassignment.tourshare.firebase.Login
 
 
 class PhotosListActivity : ComponentActivity() {
+    // Initialize Firebase references
+    private val imagesRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference.child("images")
+    private val imagesRefStorage = FirebaseStorage.getInstance().reference.child("images")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.listphotos)
@@ -63,7 +72,7 @@ class PhotosListActivity : ComponentActivity() {
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
 
         // on below line we are initializing our list
-        val PhotoList = ArrayList<Photo>()
+        val photoList = ArrayList<Photo>()
 
         // on below line we are creating a variable
         // for our grid layout manager and specifying
@@ -72,33 +81,41 @@ class PhotosListActivity : ComponentActivity() {
 
         recyclerView.layoutManager = layoutManager
 
-        // on below line we are initializing our adapter
-        val photoRVAdapter = Adapter(PhotoList, this)
+        // Create a new instance of the adapter using the updated photoList
+        val photoRVAdapter = Adapter(photoList, this)
 
-        // on below line we are setting
-        // adapter to our recycler view.
+        // Set the adapter to the recycler view
         recyclerView.adapter = photoRVAdapter
 
-        // on below line we are adding data to our list
-        PhotoList.add(Photo("Bild1", R.drawable.map1))
-        PhotoList.add(Photo("Bild2", R.drawable.menu))
-        PhotoList.add(Photo("Bild3", R.drawable.play))
-        PhotoList.add(Photo("Bild4", R.drawable.stop))
-        PhotoList.add(Photo("Bild5", R.drawable.pause))
+        // Set up the ValueEventListener to fetch the image data from the database
+        val imagesListener = object : ValueEventListener {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onDataChange(snapshot: DataSnapshot) {
+                photoList.clear()
 
-        // on below line we are notifying adapter
-        // that data has been updated.
-        photoRVAdapter.notifyDataSetChanged()
+                for (imageSnapshot in snapshot.children) {
+                    val url = imageSnapshot.child("imageUrl").value as? String ?: ""
+                    val title = imageSnapshot.child("title").value as? String ?: ""
+                    val description = imageSnapshot.child("description").value as? String ?: ""
 
+                    // Create a Photo object with the retrieved data
+                    val photo = Photo(title, description, url)
 
-        photoRVAdapter.onItemClick = {
+                    // Add the photo to the list
+                    photoList.add(photo)
+                }
 
-            // do something with your item
-            Log.d("PhotosListActivity: ", " Yic clicked on ${it.title}")
-            val DetailView = Intent(this@PhotosListActivity, DetailActivity::class.java)
-            DetailView.putExtra("photo", it)
-            startActivity(DetailView)
+                // Notify the adapter that the data has changed
+                photoRVAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the database error
+                Log.e("PhotosListActivity", "Error retrieving image data: $error")
+            }
         }
 
+        // Attach the ValueEventListener to the database reference
+        imagesRefDB.addValueEventListener(imagesListener)
     }
 }

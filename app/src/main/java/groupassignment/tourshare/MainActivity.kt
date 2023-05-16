@@ -28,6 +28,10 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
 import com.google.maps.android.compose.*
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -55,6 +59,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     private lateinit var locationName: MutableState<String>
     private lateinit var currentPos: MutableState<LatLng>
     private lateinit var mMap: GoogleMap
+    private lateinit var routeRefDB: DatabaseReference
     private var youMarker: Marker? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +68,13 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         geoCoder = Geocoder(this, Locale.getDefault())
         locationService = Service(fusedLocationClient, this, geoCoder)
         setContentView(R.layout.activity_main)
+
+        // Get current user
+        val user = FirebaseAuth.getInstance().currentUser
+        val uid = user!!.uid
+
+        // Init firebase
+        routeRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference.child("routes")
 
         // If the Camera Button is clicked:
         val openCameraButton: ImageButton = findViewById(R.id.Camera_Button)
@@ -83,6 +95,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                             startActivityForResult(intent, camera_requestCode)*/
                             val CameraView = Intent(this@MainActivity, CameraActivity::class.java)
+                            CameraView.putExtra("uid", uid)
                             startActivity(CameraView)
                         }
                     }
@@ -197,6 +210,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             }
             playButton.visibility = View.VISIBLE
             stopButton.visibility = View.GONE
+            continueButton.visibility = View.GONE
         }
 
         pauseButton.setOnClickListener{
@@ -243,6 +257,10 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                                 Log.v(TAG_ROUTE, "Length of locations ${it.size.toString()}")
                             }
                             drawRoute(mMap, polyLineList, locationName, currentPos)
+
+                            //Save the route to the firebase database
+                            saveRouteToDatabase(polyLineList)
+
                             findViewById<ComposeView>(R.id.my_composable).setContent {
                                 updatePosition(youMarker, locationService, mMap)
                             }
@@ -325,5 +343,36 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         super.onLowMemory()
         mapview.onLowMemory()
     }
+
+
+    private fun saveRouteToDatabase(polyLineListJson: MutableState<List<LatLng>>) {
+        // Convert the polyline list from JSON to a List of LatLng objects
+        val polyLineList = polyLineListJson.value
+
+        // Create a unique key for the new route entry
+        val newRouteKey = routeRefDB.push().key
+
+        // Create a HashMap to store the route data
+        val routeData = HashMap<String, Any>()
+        routeData["route"] = polyLineList
+
+        // Upload the route data to the "routes" node with the unique key
+        if (newRouteKey != null) {
+            routeRefDB.child(newRouteKey).setValue(routeData)
+                .addOnSuccessListener {
+                    // Route uploaded successfully
+                    Log.i("SaveRouteToDatabase", "Route uploaded successfully.")
+                }
+                .addOnFailureListener { exception ->
+                    // Error uploading the route
+                    Log.e("SaveRouteToDatabase", "Error uploading route: ", exception)
+                }
+        } else {
+            // Error generating a new route key
+            Log.e("SaveRouteToDatabase", "Error generating new route key.")
+        }
+    }
+
+
 }
 

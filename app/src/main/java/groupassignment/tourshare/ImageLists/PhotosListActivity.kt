@@ -1,5 +1,6 @@
 package groupassignment.tourshare.ImageLists
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +16,11 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 import groupassignment.tourshare.Camera.CameraActivity
 import groupassignment.tourshare.MainActivity
 import groupassignment.tourshare.R
@@ -25,6 +31,9 @@ import groupassignment.tourshare.firebase.Login
 // This activity displays all images in a scrollable grid Layout with a RecyclerView
 
 class PhotosListActivity : ComponentActivity() {
+    // Initialize Firebase references
+    private val imagesRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference.child("images")
+    private val imagesRefStorage = FirebaseStorage.getInstance().reference.child("images")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.listphotos)
@@ -38,6 +47,7 @@ class PhotosListActivity : ComponentActivity() {
             navView.setNavigationItemSelectedListener {
                 when (it.itemId) {
                     R.id.nav_map -> {
+                        //what should happen:
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                         drawer.close()
@@ -73,6 +83,7 @@ class PhotosListActivity : ComponentActivity() {
 
         // initialize our adapter
         val photoRVAdapter = Adapter(PhotoList, this)
+        // Create a new instance of the adapter using the updated photoList
 
         // set the adapter to the recycler view.
         recyclerView.adapter = photoRVAdapter
@@ -80,14 +91,38 @@ class PhotosListActivity : ComponentActivity() {
         // on below line we are adding data to our list
         // The List contains data of the DataClass photo (photos.kt)
         // All items in the List will we displayed
-        PhotoList.add(Photo("Bild1", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg", 1.1 , 2.2, "nice picture", 1))
+        /*PhotoList.add(Photo("Bild1", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg", 1.1 , 2.2, "nice picture", 1))
         PhotoList.add(Photo("Bild2", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg",.1 , 2.2, "cool picture", 1))
         PhotoList.add(Photo("Bild3", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg", .1 , 2.2, "nice picture", 1))
         PhotoList.add(Photo("Bild4", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg",.1 , 2.2, "cool picture", 1))
-        PhotoList.add(Photo("Bild5", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg",.1 , 2.2, "nice picture", 1))
+        PhotoList.add(Photo("Bild5", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg",.1 , 2.2, "nice picture", 1))*/
+        // Set up the ValueEventListener to fetch the image data from the database
+        val imagesListener = object : ValueEventListener {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onDataChange(snapshot: DataSnapshot) {
+                PhotoList.clear()
 
-        // notify the adapter that data has been updated.
-        photoRVAdapter.notifyDataSetChanged()
+                for (imageSnapshot in snapshot.children) {
+                    val url = imageSnapshot.child("imageUrl").value as? String ?: ""
+                    val title = imageSnapshot.child("title").value as? String ?: ""
+                    val description = imageSnapshot.child("description").value as? String ?: ""
+
+                    // Create a Photo object with the retrieved data
+                    val photo = Photo(title, description, url)
+
+                    // Add the photo to the list
+                    PhotoList.add(photo)
+                }
+                // notify the adapter that data has been updated.
+                photoRVAdapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the database error
+                Log.e("PhotosListActivity", "Error retrieving image data: $error")
+            }
+        }
+
 
 
         // Handles the click on a image-item:
@@ -97,6 +132,9 @@ class PhotosListActivity : ComponentActivity() {
             DetailView.putExtra("photo", it)
             startActivity(DetailView)
         }
+
+        // Attach the ValueEventListener to the database reference
+        imagesRefDB.addValueEventListener(imagesListener)
 
     }
 }

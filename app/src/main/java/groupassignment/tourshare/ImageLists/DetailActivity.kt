@@ -16,6 +16,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.bumptech.glide.Glide
 import groupassignment.tourshare.ImageLists.ui.theme.TourShareTheme
 import groupassignment.tourshare.R
 
@@ -35,6 +36,7 @@ class DetailActivity : ComponentActivity() {
             val photoImageView:ImageView = findViewById(R.id.photo)
             val descr :TextView = findViewById(R.id.textView7)
             val loc :TextView = findViewById(R.id.textView9)
+            //Need description?
 
             // set the values for the ui-items
             titleTextView.text = photo.title
@@ -44,6 +46,10 @@ class DetailActivity : ComponentActivity() {
             val bitmap = BitmapFactory.decodeFile(path)
             photoImageView.setImageBitmap(bitmap)
 
+            Glide.with(this)
+                .load(photo.uri)
+                .into(photoImageView)
+
         }
 
         // handle backButton: return to last activity
@@ -51,6 +57,8 @@ class DetailActivity : ComponentActivity() {
         backButton.setOnClickListener {
             finish()
         }
+
+
 
     }
 }

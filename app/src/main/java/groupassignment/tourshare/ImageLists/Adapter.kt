@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import groupassignment.tourshare.R
 
 
@@ -34,8 +35,11 @@ import groupassignment.tourshare.R
             val ph = photoList[position]
             holder.idImageText.text = photoList.get(position).title
             val bitmap = BitmapFactory.decodeFile(photoList.get(position).uri)
-            holder.idImage.setImageBitmap(bitmap)
+            //holder.idImage.setImageBitmap(bitmap)
             // add a setOnClickListener to make the images clickable
+            Glide.with(context)
+                .load(ph.uri)
+                .into(holder.idImage)
             holder.itemView.setOnClickListener {
                 onItemClick?.invoke(ph)
             }

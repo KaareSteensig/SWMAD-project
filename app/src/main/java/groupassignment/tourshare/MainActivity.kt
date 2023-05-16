@@ -14,12 +14,12 @@ import android.os.PersistableBundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
-import android.widget.ImageButton
-import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
+import android.widget.ImageButton
+import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -30,6 +30,11 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
+import com.google.maps.android.compose.*
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -59,6 +64,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
     private lateinit var locationName: MutableState<String>
     private lateinit var currentPos: MutableState<LatLng>
     private lateinit var mMap: GoogleMap
+    private lateinit var routeRefDB: DatabaseReference
     private var youMarker: Marker? = null
     private var imagelocation: Location? = null
     private var setMarkerRequestCode : Int = 5
@@ -77,6 +83,13 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
         geoCoder = Geocoder(this, Locale.getDefault())
         locationService = Service(fusedLocationClient, this, geoCoder)
         setContentView(R.layout.activity_main)
+
+        // Get current user
+        val user = FirebaseAuth.getInstance().currentUser
+        val uid = user!!.uid
+
+        // Init firebase
+        routeRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference.child("routes")
 
         // If the Camera Button is clicked:
         val openCameraButton: ImageButton = findViewById(R.id.Camera_Button)
@@ -180,26 +193,20 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
 
         mapview = findViewById(R.id.Map_View)
 
-        if ((ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED)
-            && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        ) {
+        if((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION ) == PackageManager.PERMISSION_GRANTED)
+            && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
             locationService.setLocationOn()
-        } else {
+        }
+        else {
             val permission = arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
             requestPermissions(permission, 2)
-            locationService.setLocationOn()
-            if ((ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED)
-                && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-            ) {
+            if((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION ) == PackageManager.PERMISSION_GRANTED)
+                && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                locationService.setLocationOn()
             }
         }
         mapview.onCreate(savedInstanceState)
@@ -221,30 +228,34 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
         stopButton.visibility = View.GONE
         pauseButton.visibility = View.GONE
         continueButton.visibility = View.GONE
-        stopButton.setOnClickListener {
+        stopButton.setOnClickListener{
             locationService.stopTracking()
-            if (pauseButton.visibility == View.GONE) {
+            if(pauseButton.visibility == View.GONE)
+            {
                 continueButton.visibility = View.GONE
-            } else {
+            }
+            else
+            {
                 pauseButton.visibility = View.GONE
             }
             playButton.visibility = View.VISIBLE
             stopButton.visibility = View.GONE
+            continueButton.visibility = View.GONE
         }
 
-        pauseButton.setOnClickListener {
+        pauseButton.setOnClickListener{
             locationService.pauseTracking()
             pauseButton.visibility = View.GONE
             continueButton.visibility = View.VISIBLE
         }
 
-        continueButton.setOnClickListener {
+        continueButton.setOnClickListener{
             locationService.resumeTracking()
             continueButton.visibility = View.GONE
             pauseButton.visibility = View.VISIBLE
         }
 
-        playButton.setOnClickListener {
+        playButton.setOnClickListener{
             stopButton.visibility = View.VISIBLE
             playButton.visibility = View.GONE
             pauseButton.visibility = View.VISIBLE
@@ -259,7 +270,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
                 LaunchedEffect(locationService.locationOn.value) {
                     scope.launch {
                         locationService.startTracking(youMarker, mMap) {
-                            if (it.isNotEmpty()) {
+                            if(it.isNotEmpty()) {
                                 polyLineList.value = it.map { l ->
                                     LatLng(
                                         l.latitude,
@@ -276,9 +287,12 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
                                 Log.v(TAG_ROUTE, "Length of locations ${it.size.toString()}")
                             }
                             drawRoute(mMap, polyLineList, locationName, currentPos)
+
+                            //Save the route to the firebase database
+                            saveRouteToDatabase(polyLineList)
+
                             findViewById<ComposeView>(R.id.my_composable).setContent {
                                 updatePosition(youMarker, locationService, mMap)
-
                             }
                         }
                     }
@@ -287,23 +301,14 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
         }
     }
 
-    @SuppressLint("PotentialBehaviorOverride")
     override fun onMapReady(googleMap: GoogleMap) {
         youMarker = googleMap.addMarker(
             MarkerOptions()
-                .position(LatLng(location.latitude, location.longitude))
+                .position(LatLng(location.latitude,location.longitude))
                 .title("You")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.youmarker2))
         )
-
-        googleMap.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(
-                    location.latitude,
-                    location.longitude
-                ), 15f
-            )
-        )
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude,location.longitude),15f))
         mMap = googleMap
 
         findViewById<ComposeView>(R.id.my_composable).setContent {
@@ -384,6 +389,34 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
     override fun onLowMemory() {
         super.onLowMemory()
         mapview.onLowMemory()
+    }
+
+    private fun saveRouteToDatabase(polyLineListJson: MutableState<List<LatLng>>) {
+        // Convert the polyline list from JSON to a List of LatLng objects
+        val polyLineList = polyLineListJson.value
+
+        // Create a unique key for the new route entry
+        val newRouteKey = routeRefDB.push().key
+
+        // Create a HashMap to store the route data
+        val routeData = HashMap<String, Any>()
+        routeData["route"] = polyLineList
+
+        // Upload the route data to the "routes" node with the unique key
+        if (newRouteKey != null) {
+            routeRefDB.child(newRouteKey).setValue(routeData)
+                .addOnSuccessListener {
+                    // Route uploaded successfully
+                    Log.i("SaveRouteToDatabase", "Route uploaded successfully.")
+                }
+                .addOnFailureListener { exception ->
+                    // Error uploading the route
+                    Log.e("SaveRouteToDatabase", "Error uploading route: ", exception)
+                }
+        } else {
+            // Error generating a new route key
+            Log.e("SaveRouteToDatabase", "Error generating new route key.")
+        }
     }
 
     // if we retrun from the camera Activity, handle taken photo:

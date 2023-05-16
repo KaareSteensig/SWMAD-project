@@ -4,14 +4,28 @@ import android.app.Activity
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.media.Image
+import android.net.Uri
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import com.bumptech.glide.Glide
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.storage.StorageReference
 import com.google.android.gms.maps.model.LatLng
 import groupassignment.tourshare.ImageLists.Photo
 import groupassignment.tourshare.MainActivity
@@ -36,6 +50,15 @@ class CameraActivity : ComponentActivity() {
     private var imagePath: String = ""
     private var photo : Bitmap? = null
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var geoCoder: Geocoder
+    private lateinit var locationService: Service
+
+    //private val uid: String? = intent.getStringExtra("uid")
+    //private val imagesRefDB = uid?.let { FirebaseDatabase.getInstance().getReference("images") }
+    //private val imagesRefStorage = uid?.let { FirebaseStorage.getInstance().getReference("images") }
+    private lateinit var imagesRefDB: DatabaseReference
+    private lateinit var imagesRefStorage: StorageReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +71,11 @@ class CameraActivity : ComponentActivity() {
 
 
         // Open the Camera of the Phone
+        // Init firebase
+        imagesRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference.child("images")
+        imagesRefStorage = FirebaseStorage.getInstance().getReference("images")
+
+        // Open Camera of the Phone
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(intent, camera_requestCode)
 
@@ -63,6 +91,9 @@ class CameraActivity : ComponentActivity() {
             // saves the image to the storage
             photo?.let {
                 imagePath = saveImageToInternalStorage(photo!!)
+                Log.i("SAVING", "Image saved to $imagePath")
+                uploadImageToStorage(imagePath, title, description)
+                // Reload image withthis URI
                 //Log.i("SAVING", "Image saved to ${imagePath}")
 
 
@@ -119,6 +150,25 @@ class CameraActivity : ComponentActivity() {
         return file.absolutePath
     }
 
+    private fun uploadImageToStorage(imagePath: String, title: String, description: String) {
+        val file = Uri.fromFile(File(imagePath))
+        val imageRef = imagesRefStorage.child(file.lastPathSegment!!)
+
+        imageRef.putFile(file).addOnSuccessListener {
+            imageRef.downloadUrl.addOnSuccessListener {
+                val key = imagesRefDB.push().key!!
+                val image = groupassignment.tourshare.firebase.Image(title, description, imagePath)
+
+                imagesRefDB.child(key).setValue(image)
+                    .addOnCompleteListener{
+                    }.addOnFailureListener{err ->
+                        Toast.makeText(this, "Error ${err.message}", Toast.LENGTH_LONG).show()
+                    }
+                Log.i("Camera Upload", "Image uploaded successfully.")
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("CameraActivity Upload", "Error uploading image: ", exception)
+        }
+    }
+
 }
-
-

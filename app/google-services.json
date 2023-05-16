@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "421237724083",
-    "project_id": "tourshare-457b6",
-    "storage_bucket": "tourshare-457b6.appspot.com"
+    "project_number": "44410266562",
+    "project_id": "spotshare12",
+    "storage_bucket": "spotshare12.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:421237724083:android:9ce045aa6d25a3a563b1c6",
+        "mobilesdk_app_id": "1:44410266562:android:dea03fc23b0f856380ec5b",
         "android_client_info": {
           "package_name": "groupassignment.tourshare"
         }
       },
       "oauth_client": [
         {
-          "client_id": "421237724083-vgbafpteg770u62nhe5jct03qedehb14.apps.googleusercontent.com",
+          "client_id": "44410266562-4os49ur0p19l5o0dpnl1faa00mm8pndv.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCLlGFhWFP1lKRiJjGGgxUzNnKFmur0uV8"
+          "current_key": "AIzaSyD-WK-wjg363_CjmPJWJfTNbTIHHSwSpXY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "421237724083-4iqtod2tta3qjbk0pmc9frccnm7dsuri.apps.googleusercontent.com",
+              "client_id": "44410266562-4os49ur0p19l5o0dpnl1faa00mm8pndv.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

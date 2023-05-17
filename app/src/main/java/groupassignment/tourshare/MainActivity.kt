@@ -28,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
+import com.google.android.gms.tasks.Tasks.await
 import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.firebase.auth.FirebaseAuth
@@ -50,6 +51,7 @@ import groupassignment.tourshare.gps.Service
 import groupassignment.tourshare.gps.TAG_ROUTE
 import groupassignment.tourshare.gps.drawRoute
 import groupassignment.tourshare.gps.updatePosition
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -101,31 +103,23 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                 Manifest.permission.CAMERA,
             ).withListener(object : MultiplePermissionsListener {
                 // What to do when we have all permissions:
+                @SuppressLint("CoroutineCreationDuringComposition")
                 override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                     p0?.let {
                         if (p0!!.areAllPermissionsGranted()) {
-                            /*Toast.makeText(this@MainActivity,"You have permissions now",Toast.LENGTH_SHORT                           ).show()
-                            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            startActivityForResult(intent, camera_requestCode)*/
-                            val CameraView = Intent(this@MainActivity, CameraActivity::class.java)
-                            CameraView.putExtra("uid", currentUserID)
-                            startActivity(CameraView)
-
-                            findViewById<ComposeView>(R.id.my_composable).setContent {
+                              findViewById<ComposeView>(R.id.my_composable).setContent {
                                 val scope = rememberCoroutineScope()
-                                LaunchedEffect(locationService.locationOn.value) {
                                     scope.launch {
                                         imagelocation = locationService.getCurrentLocation()
-                                        Log.i("MAIN", "Imagelocation: $imagelocation")
                                         val CameraView =
                                             Intent(this@MainActivity, CameraActivity::class.java)
                                         CameraView.putExtra("long", imagelocation!!.longitude)
                                         CameraView.putExtra("lat", imagelocation!!.latitude)
                                         CameraView.putExtra("routeNr", routeNr)
+                                        CameraView.putExtra("uid", currentUserID)
                                         //startActivity(CameraView)
                                         startActivityForResult(CameraView, setMarkerRequestCode)
                                     }
-                                }
                             }
                         }
                     }

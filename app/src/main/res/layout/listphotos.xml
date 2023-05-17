@@ -19,6 +19,7 @@
             android:background="#01395D"
             android:fontFamily="@font/amaranth"
             android:text="Your Photos"
+            android:gravity="center"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="#FFFFFF"

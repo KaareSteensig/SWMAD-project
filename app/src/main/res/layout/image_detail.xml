@@ -10,7 +10,7 @@
         android:id="@+id/imagetitle"
         android:layout_width="198dp"
         android:layout_height="41dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="30dp"
         android:fontFamily="@font/amaranth"
         android:text="Title"
         android:textAlignment="center"
@@ -23,8 +23,8 @@
 
     <ImageView
         android:id="@+id/photo"
-        android:layout_width="320dp"
-        android:layout_height="339dp"
+        android:layout_width="399dp"
+        android:layout_height="459dp"
         android:layout_marginTop="4dp"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/amaranth"
         android:text="TextView"
         android:textAlignment="center"
@@ -53,7 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/amaranth"
         android:text="Description: "
         android:textAlignment="center"
@@ -99,12 +99,12 @@
         android:layout_height="58dp"
         android:layout_marginBottom="4dp"
         android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
         android:background="#01395D"
+        android:scaleType="fitCenter"
         android:src="@drawable/baseline_arrow_circle_left_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.018"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -44,11 +44,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/amaranth"
             android:gravity="center"
             android:text="@string/login"
             android:textColor="#0B0B0B"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textSize="34sp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -76,6 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:backgroundTint="#465678"
+            android:fontFamily="@font/amaranth"
             android:text="@string/login" />
 
         <Button
@@ -84,6 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:backgroundTint="#465678"
+            android:fontFamily="@font/amaranth"
             android:text="@string/sign_up" />
 
     </LinearLayout>

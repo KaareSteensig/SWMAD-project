@@ -69,7 +69,6 @@ class CameraActivity : ComponentActivity() {
         val routeNr: Int = intent.getIntExtra("routeNr", 1)
 
 
-        // Open the Camera of the Phone
         // Init firebase
         imagesRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference
         imagesRefStorage = FirebaseStorage.getInstance().getReference("images")
@@ -97,7 +96,6 @@ class CameraActivity : ComponentActivity() {
                 }
                 // Reload image withthis URI
                 //Log.i("SAVING", "Image saved to ${imagePath}")
-
 
             }
 

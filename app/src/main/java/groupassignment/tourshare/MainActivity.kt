@@ -523,8 +523,8 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                                 MarkerOptions()
                                     .position(
                                         LatLng(
-                                            imageList[i].lat + 0.002,
-                                            imageList[i].long + 0.002
+                                            imageList[i].lat,
+                                            imageList[i].long
                                         )
                                     )
                                     .title(imageList[i].title)

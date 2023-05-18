@@ -51,10 +51,6 @@ class CameraActivity : ComponentActivity() {
     private var imagePath: String = ""
     private var photo : Bitmap? = null
 
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var geoCoder: Geocoder
-    private lateinit var locationService: Service
-
     //Firebase
     private lateinit var imagesRefDB: DatabaseReference
     private lateinit var imagesRefStorage: StorageReference

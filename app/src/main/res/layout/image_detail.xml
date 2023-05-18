@@ -10,7 +10,7 @@
         android:id="@+id/imagetitle"
         android:layout_width="198dp"
         android:layout_height="41dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="15dp"
         android:fontFamily="@font/amaranth"
         android:text="Title"
         android:textAlignment="center"
@@ -23,8 +23,8 @@
 
     <ImageView
         android:id="@+id/photo"
-        android:layout_width="399dp"
-        android:layout_height="459dp"
+        android:layout_width="match_parent"
+        android:layout_height="430dp"
         android:layout_marginTop="4dp"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
@@ -104,7 +104,7 @@
         android:src="@drawable/baseline_arrow_circle_left_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.018"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

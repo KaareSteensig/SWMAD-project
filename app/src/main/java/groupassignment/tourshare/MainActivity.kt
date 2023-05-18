@@ -3,9 +3,11 @@ package groupassignment.tourshare
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.ColorDrawable
 import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
@@ -14,12 +16,12 @@ import android.os.PersistableBundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.widget.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
-import android.widget.ImageButton
-import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.graphics.Color
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -30,6 +32,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.Tasks.await
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.textfield.TextInputEditText
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -149,7 +152,6 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                         CameraView.putExtra("lat", imagelocation!!.latitude)
                         CameraView.putExtra("routeNr", routeNr)
                         CameraView.putExtra("uid", currentUserID)
-                        //startActivity(CameraView)
                         startActivityForResult(CameraView, setMarkerRequestCode)
                     }
                 }
@@ -241,6 +243,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             playButton.visibility = View.VISIBLE
             stopButton.visibility = View.GONE
             continueButton.visibility = View.GONE
+
         }
 
         pauseButton.setOnClickListener{

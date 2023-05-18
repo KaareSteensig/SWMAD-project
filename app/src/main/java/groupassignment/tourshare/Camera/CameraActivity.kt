@@ -90,11 +90,7 @@ class CameraActivity : ComponentActivity() {
                 if (uid != null) {
                     saveImageToDatabase(imagePath, title, description, uid)
                 }
-                // Reload image withthis URI
-                //Log.i("SAVING", "Image saved to ${imagePath}")
-
             }
-
             // Create a new photo and submit it back to the main activity
             val backintent = Intent()
             val photo = Photo(title, imagePath, long, lat, description, routeNr)

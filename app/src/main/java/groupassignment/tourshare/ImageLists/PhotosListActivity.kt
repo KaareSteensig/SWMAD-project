@@ -97,29 +97,23 @@ class PhotosListActivity : ComponentActivity() {
         // on below line we are adding data to our list
         // The List contains data of the DataClass photo (photos.kt)
         // All items in the List will we displayed
-        /*PhotoList.add(Photo("Bild1", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg", 1.1 , 2.2, "nice picture", 1))
-        PhotoList.add(Photo("Bild2", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg",.1 , 2.2, "cool picture", 1))
-        PhotoList.add(Photo("Bild3", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg", .1 , 2.2, "nice picture", 1))
-        PhotoList.add(Photo("Bild4", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg",.1 , 2.2, "cool picture", 1))
-        PhotoList.add(Photo("Bild5", "/data/user/0/groupassignment.tourshare/app_taken_photos/7c558566-a630-437d-b542-4d29450aaa76.jpg",.1 , 2.2, "nice picture", 1))*/
-        // Set up the ValueEventListener to fetch the image data from the database
         val imagesListener = object : ValueEventListener {
             @SuppressLint("NotifyDataSetChanged")
             override fun onDataChange(snapshot: DataSnapshot) {
                 PhotoList.clear()
+                val i = 0
 
                 for (imageSnapshot in snapshot.children) {
                     val url = imageSnapshot.child("imageUrl").value as? String ?: ""
                     val title = imageSnapshot.child("title").value as? String ?: ""
                     val description = imageSnapshot.child("description").value as? String ?: ""
+                    val long = imageSnapshot.child("longitude").value as? Double?: 0.0
+                    val lat = imageSnapshot.child("latitude").value as? Double ?: 0.0
 
-                    //Todo: retreive data
-                    val long = 1.1
-                    val lat = 1.2
-                    val routeNr = 1
+                    val routeNr = i + 1
 
                     // Create a Photo object with the retrieved data
-                    val photo = Photo(title, url, long,  lat, description, routeNr )
+                    val photo = Photo(title, url, long,  lat, description, routeNr)
 
                     // Add the photo to the list
                     PhotoList.add(photo)

@@ -67,7 +67,7 @@ class CameraActivity : ComponentActivity() {
 
         // Init firebase
         imagesRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference
-        imagesRefStorage = FirebaseStorage.getInstance().getReference("images")
+        imagesRefStorage = FirebaseStorage.getInstance().reference
         val uid = intent.getStringExtra("uid")
 
         // Open Camera of the Phone
@@ -88,7 +88,7 @@ class CameraActivity : ComponentActivity() {
                 imagePath = saveImageToInternalStorage(photo!!)
                 Log.i("SAVING", "Image saved to $imagePath")
                 if (uid != null) {
-                    saveImageToDatabase(imagePath, title, description, uid)
+                    saveImageToDatabase(imagePath, title, description, uid, long, lat)
                 }
             }
             // Create a new photo and submit it back to the main activity
@@ -142,16 +142,16 @@ class CameraActivity : ComponentActivity() {
         return file.absolutePath
     }
 
-    private fun saveImageToDatabase(imagePath: String, title: String, description: String, uid: String) {
+    private fun saveImageToDatabase(imagePath: String, title: String, description: String, uid: String, longitude: Double, latitude: Double) {
         val file = Uri.fromFile(File(imagePath))
-        val imageRef = imagesRefStorage.child(file.lastPathSegment!!)
+        val imageRef = imagesRefStorage.child("users/$uid/images/${UUID.randomUUID()}.jpg")
 
         imageRef.putFile(file).addOnSuccessListener {
             imageRef.downloadUrl.addOnSuccessListener {
                 val newImageKey = imagesRefDB.child("users").child(uid).child("images").push().key
                 if (newImageKey != null) {
                     val image =
-                        groupassignment.tourshare.firebase.Image(title, description, imagePath)
+                        groupassignment.tourshare.firebase.Image(title, description, imagePath, longitude, latitude)
                     imagesRefDB.child("users").child(uid).child("images").child(newImageKey)
                         .setValue(image)
                         .addOnCompleteListener {

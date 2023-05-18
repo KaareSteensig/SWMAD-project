@@ -55,7 +55,5 @@ import groupassignment.tourshare.R
             // initialize the image name text view and our image view.
             val idImageText : TextView = itemView.findViewById(R.id.idImagetext)
             val idImage: ImageView = itemView.findViewById(R.id.idImage)
-
-
         }
     }

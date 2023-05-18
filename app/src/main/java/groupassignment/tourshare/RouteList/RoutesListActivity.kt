@@ -1,38 +1,48 @@
 package groupassignment.tourshare.RouteList
 
+import CustomAdapter
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
+import android.util.Log
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import groupassignment.tourshare.ImageLists.DetailActivity
+import groupassignment.tourshare.ImageLists.Photo
 import groupassignment.tourshare.ImageLists.PhotosListActivity
 import groupassignment.tourshare.MainActivity
 import groupassignment.tourshare.R
 import groupassignment.tourshare.firebase.Login
 
-class RoutesListActivity : ComponentActivity(){
+class RoutesListActivity : ComponentActivity() {
+    // Initialize Firebase references
+    private val currentUser = FirebaseAuth.getInstance().currentUser
+    private val uid = currentUser?.uid
+    private val routesRefDB = uid?.let {
+        FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app")
+            .reference.child("users").child(it).child("routes")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_listroutes)
 
         val openMenuButton: ImageButton = findViewById(R.id.Menu_Button)
-        openMenuButton.setOnClickListener{
+        openMenuButton.setOnClickListener {
             val drawer: DrawerLayout = findViewById(R.id.drawerLayout)
             drawer.open()
             val navView: NavigationView = findViewById(R.id.navView)
             navView.setNavigationItemSelectedListener {
                 when (it.itemId) {
                     R.id.nav_map -> {
-                        //what should happen:
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)
                         drawer.close()
@@ -46,6 +56,7 @@ class RoutesListActivity : ComponentActivity(){
                         drawer.close()
                     }
                     R.id.nav_logout -> {
+                        FirebaseAuth.getInstance().signOut()
                         val intent = Intent(this, Login::class.java)
                         startActivity(intent)
                         drawer.close()
@@ -56,31 +67,61 @@ class RoutesListActivity : ComponentActivity(){
         }
 
         // getting the recyclerview by its id
-        val recyclerview = findViewById<RecyclerView>(R.id.recyclerview1)
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerview1)
+
+        // ArrayList of class Routes
+        val RouteList = ArrayList<Routes>()
 
         // this creates a vertical layout Manager
-        recyclerview.layoutManager = LinearLayoutManager(this)
-
-        // ArrayList of class ItemsViewModel
-        val data = ArrayList<Routes>()
-
-        // This loop will create 20 Views containing
-        // the image with the count of view
-        val Route1 = Routes("Route1", "walk by harbour", R.drawable.map1)
-        val Route2 = Routes("Route2", "walk through forest", R.drawable.map1)
-        data.add(Route1)
-        data.add(Route2)
-        /*for (i in 1..2) {
-            data.add(Route1, Route2)
-            //data.add(Routes(R.drawable.baseline_stop_circle_24, "Item " + i))
-        }*/
-
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
         // This will pass the ArrayList to our Adapter
-        val adapter = CustomAdapter(data)
+        val adapter = CustomAdapter(RouteList, this)
 
         // Setting the Adapter with the recyclerview
-        recyclerview.adapter = adapter
-    }
+        recyclerView.adapter = adapter
 
+
+        // on below line we are adding data to our list
+        // The List contains data of the DataClass photo (photos.kt)
+        // All items in the List will we displayed
+        val routesListener = object : ValueEventListener {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onDataChange(snapshot: DataSnapshot) {
+                RouteList.clear()
+                val i = 0
+
+                for (imageSnapshot in snapshot.children) {
+                    val url = imageSnapshot.child("downloadURL").value as? String ?: ""
+                    val title = imageSnapshot.child("title").value as? String ?: ""
+                    val description = imageSnapshot.child("description").value as? String ?: ""
+                    // Create a Photo object with the retrieved data
+                    val route = Routes(title, url)
+
+                    // Add the photo to the list
+                    RouteList.add(route)
+                }
+                // notify the adapter that data has been updated.
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the database error
+                Log.e("RoutesListActivity", "Error retrieving route data: $error")
+            }
+        }
+
+
+        // Handles the click on a image-item:
+        // Show the Deta View of the Image
+        adapter.onItemClick = {
+            val DetailView = Intent(this@RoutesListActivity, RouteDetailActivity::class.java)
+            DetailView.putExtra("route", it)
+            startActivity(DetailView)
+        }
+
+        // Attach the ValueEventListener to the database reference
+        routesRefDB?.addValueEventListener(routesListener)
+
+    }
 }

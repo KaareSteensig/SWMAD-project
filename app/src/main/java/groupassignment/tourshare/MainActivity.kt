@@ -3,11 +3,11 @@ package groupassignment.tourshare
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.drawable.ColorDrawable
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
@@ -16,12 +16,12 @@ import android.os.PersistableBundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
-import android.widget.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
+import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.graphics.Color
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -32,11 +32,13 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.Tasks.await
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.textfield.TextInputEditText
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.values
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.google.gson.Gson
 import com.google.maps.android.compose.*
 import com.karumi.dexter.Dexter
@@ -56,6 +58,7 @@ import groupassignment.tourshare.gps.drawRoute
 import groupassignment.tourshare.gps.updatePosition
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.util.*
 
 class MainActivity : ComponentActivity(), OnMapReadyCallback  {
@@ -152,6 +155,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                         CameraView.putExtra("lat", imagelocation!!.latitude)
                         CameraView.putExtra("routeNr", routeNr)
                         CameraView.putExtra("uid", currentUserID)
+                        //startActivity(CameraView)
                         startActivityForResult(CameraView, setMarkerRequestCode)
                     }
                 }
@@ -243,7 +247,6 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             playButton.visibility = View.VISIBLE
             stopButton.visibility = View.GONE
             continueButton.visibility = View.GONE
-
         }
 
         pauseButton.setOnClickListener{
@@ -335,6 +338,64 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             false
         }
 
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val uid = currentUser?.uid
+        val imagesRefDB = uid?.let {
+            FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app")
+                .reference.child("users").child(it).child("images")
+        }
+        // Set up the ValueEventListener to fetch the image data from the database
+        val imagesListener = object : ValueEventListener {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                for (imageSnapshot in snapshot.children) {
+                    val url = imageSnapshot.child("imageUrl").value as? String ?: ""
+                    val title = imageSnapshot.child("title").value as? String ?: ""
+                    val description = imageSnapshot.child("description").value as? String ?: ""
+
+
+                    //Todo: retreive data
+                    val long = imageSnapshot.child("longitude").value as? Double?: 0.0
+                    val lat = imageSnapshot.child("latitude").value as? Double ?: 0.0
+                    val routeNr = 1
+
+
+                    val photomarker = googleMap.addMarker(
+                        MarkerOptions()
+                            .position(
+                                LatLng(
+                                    lat + 0.002,
+                                    long + 0.002
+                                )
+                            )
+                            .title(title)
+                            .snippet(description)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_icon))
+                    )
+                    if (photomarker != null) {
+                        PhotoMarkers.add(photomarker)
+                        val photo = Photo(title, url, long,  lat, description, routeNr )
+                        imageList.add(photo)
+                    }
+                    // Add the photo to the map
+                    /*googleMap.addMarker(
+                        MarkerOptions()
+                            .title(title)
+                            .snippet(description)
+                            .position(LatLng(lat, long))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_icon))
+                    )*/
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the database error
+                Log.e("MainActivity", "Error retrieving image data: $error")
+            }
+        }
+        // Attach the ValueEventListener to the database reference
+        imagesRefDB?.addValueEventListener(imagesListener)
 
     }
 
@@ -414,6 +475,10 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                 .addOnSuccessListener {
                     // Route uploaded successfully
                     Log.i("SaveRouteToDatabase", "Route uploaded successfully.")
+
+                    // Capture and save the map image
+                    val mapView = findViewById<MapView>(R.id.Map_View)
+                    captureAndSaveMapImage(mapView, uid, newRouteKey)
                 }
                 .addOnFailureListener { exception ->
                     // Error uploading the route
@@ -425,6 +490,48 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         }
     }
 
+    // Function to capture and save the map image
+    private fun captureAndSaveMapImage(mapView: MapView, uid: String, routeId: String) {
+        val bitmap = Bitmap.createBitmap(
+            mapView.width,
+            mapView.height,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        mapView.draw(canvas)
+
+        val storageRef = Firebase.storage.reference.child("users/$uid/routes/$routeId.jpg")
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val data = baos.toByteArray()
+
+        val uploadTask = storageRef.putBytes(data)
+        uploadTask.addOnSuccessListener {
+            // Get the download URL of the uploaded image
+            storageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+                val imageUrl = downloadUrl.toString()
+
+                // Update the route in the database with the image URL
+                val routeUpdates = hashMapOf<String, Any>(
+                    "downloadURL" to imageUrl
+                )
+                routeRefDB.child("users").child(uid).child("routes").child(routeId)
+                    .updateChildren(routeUpdates)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Log.d("CaptureAndSaveMapImage", "Map image saved successfully.")
+                        } else {
+                            Log.e("CaptureAndSaveMapImage", "Error saving map image: ${task.exception}")
+                        }
+                    }
+            }.addOnFailureListener { exception ->
+                Log.e("CaptureAndSaveMapImage", "Error retrieving download URL: $exception")
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("CaptureAndSaveMapImage", "Error uploading map image: $exception")
+        }
+    }
+
     // if we retrun from the camera Activity, handle taken photo:
     // add the photo to the List
     // create a marker for the photo
@@ -433,9 +540,11 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         when (requestCode) {
             setMarkerRequestCode -> {
                 if (resultCode == RESULT_OK) {
+                    //not needed anymore
+
                     // the taken photo will be submitted by the returning intent
                     // get the photo
-                    var photo = data?.getParcelableExtra<Photo>("photo")
+                    /*var photo = data?.getParcelableExtra<Photo>("photo")
                     if (photo != null) {
                         //add default values
                         if (photo.title == "") {

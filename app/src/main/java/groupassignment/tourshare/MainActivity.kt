@@ -103,6 +103,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                 Manifest.permission.CAMERA,
             ).withListener(object : MultiplePermissionsListener {
                 // What to do when we have all permissions:
+
                 @SuppressLint("CoroutineCreationDuringComposition")
                 override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
                     p0?.let {
@@ -457,8 +458,8 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                                 MarkerOptions()
                                     .position(
                                         LatLng(
-                                            imageList[i].lat + 0.002,
-                                            imageList[i].long + 0.002
+                                            imageList[i].lat,
+                                            imageList[i].long
                                         )
                                     )
                                     .title(imageList[i].title)

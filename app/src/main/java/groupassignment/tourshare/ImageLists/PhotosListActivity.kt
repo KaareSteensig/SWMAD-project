@@ -112,10 +112,10 @@ class PhotosListActivity : ComponentActivity() {
                     val url = imageSnapshot.child("imageUrl").value as? String ?: ""
                     val title = imageSnapshot.child("title").value as? String ?: ""
                     val description = imageSnapshot.child("description").value as? String ?: ""
+                    val long = imageSnapshot.child("longitude").value as? Double?: 0.0
+                    val lat = imageSnapshot.child("latitude").value as? Double ?: 0.0
 
                     //Todo: retreive data
-                    val long = 1.1
-                    val lat = 1.2
                     val routeNr = 1
 
                     // Create a Photo object with the retrieved data

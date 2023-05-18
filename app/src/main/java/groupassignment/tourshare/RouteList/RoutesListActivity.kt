@@ -91,12 +91,12 @@ class RoutesListActivity : ComponentActivity() {
                 RouteList.clear()
                 val i = 0
 
-                for (imageSnapshot in snapshot.children) {
-                    val url = imageSnapshot.child("downloadURL").value as? String ?: ""
-                    val title = imageSnapshot.child("title").value as? String ?: ""
-                    val description = imageSnapshot.child("description").value as? String ?: ""
+                for (routeSnapshot in snapshot.children) {
+                    val url = routeSnapshot.child("downloadURL").value as? String ?: ""
+                    val title = routeSnapshot.child("title").value as? String ?: ""
+                    val description = routeSnapshot.child("description").value as? String ?: ""
                     // Create a Photo object with the retrieved data
-                    val route = Routes(title, url)
+                    val route = Routes(title, url, description)
 
                     // Add the photo to the list
                     RouteList.add(route)

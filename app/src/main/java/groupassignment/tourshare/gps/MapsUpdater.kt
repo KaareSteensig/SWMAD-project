@@ -31,7 +31,7 @@ fun updatePosition(youMarker: Marker?,  locationService: Service, mMap: GoogleMa
 
 }
 
-fun drawRoute(mMap: GoogleMap, polyLineList: MutableState<List<LatLng>>, locationName: MutableState<String>, currentPos: MutableState<LatLng>) {
+fun drawRoute(mMap: GoogleMap, polyLineList: MutableState<List<LatLng>>, locationName: MutableState<String>, currentPos: MutableState<LatLng>, title: String, description: String) {
     mMap.addPolyline(
         PolylineOptions()
             .color(0xff0000ff.toInt())
@@ -40,8 +40,8 @@ fun drawRoute(mMap: GoogleMap, polyLineList: MutableState<List<LatLng>>, locatio
     )
     mMap.addMarker(
         MarkerOptions()
-            .title("start of route")
-            .snippet("Marker in ${locationName.value}")
+            .title(title)
+            .snippet(description)
             .position(currentPos.value)
     )
 }

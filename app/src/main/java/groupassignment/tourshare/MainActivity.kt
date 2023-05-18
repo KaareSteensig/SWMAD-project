@@ -59,6 +59,7 @@ import groupassignment.tourshare.gps.updatePosition
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.util.*
 
 class MainActivity : ComponentActivity(), OnMapReadyCallback  {
@@ -292,12 +293,15 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                                     CameraPosition.fromLatLngZoom(currentPos.value, 15f)
                                 Log.v(TAG_ROUTE, "Length of locations ${it.size.toString()}")
                             }
-                            drawRoute(mMap, polyLineList, locationName, currentPos)
+                            var routeTitle: String = "Unknown"
+                            var routeDescription: String = "UNKNOWN"
 
                             //Save the route to the firebase database
                             if (currentUserID != null) {
-                                saveRouteToDatabase(polyLineList, currentUserID)
+                                saveRouteToDatabase(polyLineList, currentUserID, routeTitle, routeDescription)
                             }
+
+                            drawRoute(mMap, polyLineList, locationName, currentPos, routeTitle, routeDescription)
 
                             findViewById<ComposeView>(R.id.my_composable).setContent {
                                 updatePosition(youMarker, locationService, mMap)
@@ -458,7 +462,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     }
 
 
-    private fun saveRouteToDatabase(polyLineListJson: MutableState<List<LatLng>>, uid: String) {
+    private fun saveRouteToDatabase(polyLineListJson: MutableState<List<LatLng>>, uid: String, title: String, description: String) {
         // Convert the polyline list from JSON to a List of LatLng objects
         val polyLineList = polyLineListJson.value
 
@@ -477,8 +481,25 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                     Log.i("SaveRouteToDatabase", "Route uploaded successfully.")
 
                     // Capture and save the map image
-                    val mapView = findViewById<MapView>(R.id.Map_View)
-                    captureAndSaveMapImage(mapView, uid, newRouteKey)
+                    captureAndSaveMapImage(mapview, uid, newRouteKey)
+
+                    // Create a HashMap to store the route data
+                    val descriptorData = HashMap<String, Any>()
+                    descriptorData["title"] = title
+                    descriptorData["description"] = description
+
+                    routeRefDB.child("users").child(uid).child("routes").child(newRouteKey).setValue(descriptorData)
+                        .addOnSuccessListener {
+                            // Title and description uploaded successfully
+                            Log.i(
+                                "SaveRouteToDatabase",
+                                "Title and Description uploaded successfully."
+                            )
+                        }
+                        .addOnFailureListener { exception ->
+                            // Error uploading the route
+                            Log.e("SaveRouteToDatabase", "Error uploading title and description: ", exception)
+                        }
                 }
                 .addOnFailureListener { exception ->
                     // Error uploading the route
@@ -587,7 +608,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                             }
                            // Log.i("MAIN", "You set a marker on  ${imageList[i].title}")
                         }
-                    }
+                    }*/
                 }
             }
         }

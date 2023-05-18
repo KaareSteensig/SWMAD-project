@@ -33,7 +33,6 @@
         app:layout_constraintTop_toBottomOf="@+id/imagetitle"
         tools:srcCompat="@tools:sample/avatars" />
 
-
     <ImageButton
         android:id="@+id/back_button"
         android:layout_width="78dp"

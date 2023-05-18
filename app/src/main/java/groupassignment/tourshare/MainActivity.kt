@@ -6,6 +6,8 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
@@ -33,7 +35,10 @@ import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.values
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.google.gson.Gson
 import com.google.maps.android.compose.*
 import com.karumi.dexter.Dexter
@@ -53,6 +58,7 @@ import groupassignment.tourshare.gps.drawRoute
 import groupassignment.tourshare.gps.updatePosition
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.util.*
 
 class MainActivity : ComponentActivity(), OnMapReadyCallback  {
@@ -452,16 +458,16 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
     }
 
 
-    private fun saveRouteToDatabase(polyLineListJson: MutableState<List<LatLng>>, uid: String) {
-        // Convert the polyline list from JSON to a List of LatLng objects
-        val polyLineList = polyLineListJson.value
+    private fun saveRouteToDatabase(polyLineList: MutableState<List<LatLng>>, uid: String) {
+        // Convert the polyline list to a List of LatLng objects
+        val polyLineListHash = polyLineList.value
 
         // Create a unique key for the new route entry
         val newRouteKey = routeRefDB.child(uid).child("routes").push().key
 
         // Create a HashMap to store the route data
         val routeData = HashMap<String, Any>()
-        routeData["route"] = polyLineList
+        routeData["route"] = polyLineListHash
 
         // Upload the route data to the "users/uid/routes" node with the unique key
         if (newRouteKey != null) {
@@ -469,6 +475,10 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                 .addOnSuccessListener {
                     // Route uploaded successfully
                     Log.i("SaveRouteToDatabase", "Route uploaded successfully.")
+
+                    // Capture and save the map image
+                    val mapView = findViewById<MapView>(R.id.Map_View)
+                    captureAndSaveMapImage(mapView, uid, newRouteKey)
                 }
                 .addOnFailureListener { exception ->
                     // Error uploading the route
@@ -477,6 +487,48 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         } else {
             // Error generating a new route key
             Log.e("SaveRouteToDatabase", "Error generating new route key.")
+        }
+    }
+
+    // Function to capture and save the map image
+    private fun captureAndSaveMapImage(mapView: MapView, uid: String, routeId: String) {
+        val bitmap = Bitmap.createBitmap(
+            mapView.width,
+            mapView.height,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        mapView.draw(canvas)
+
+        val storageRef = Firebase.storage.reference.child("users/$uid/routes/$routeId.jpg")
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val data = baos.toByteArray()
+
+        val uploadTask = storageRef.putBytes(data)
+        uploadTask.addOnSuccessListener {
+            // Get the download URL of the uploaded image
+            storageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+                val imageUrl = downloadUrl.toString()
+
+                // Update the route in the database with the image URL
+                val routeUpdates = hashMapOf<String, Any>(
+                    "downloadURL" to imageUrl
+                )
+                routeRefDB.child("users").child(uid).child("routes").child(routeId)
+                    .updateChildren(routeUpdates)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Log.d("CaptureAndSaveMapImage", "Map image saved successfully.")
+                        } else {
+                            Log.e("CaptureAndSaveMapImage", "Error saving map image: ${task.exception}")
+                        }
+                    }
+            }.addOnFailureListener { exception ->
+                Log.e("CaptureAndSaveMapImage", "Error retrieving download URL: $exception")
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("CaptureAndSaveMapImage", "Error uploading map image: $exception")
         }
     }
 

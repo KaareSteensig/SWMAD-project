@@ -67,7 +67,7 @@ class CameraActivity : ComponentActivity() {
 
         // Init firebase
         imagesRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference
-        imagesRefStorage = FirebaseStorage.getInstance().getReference("images")
+        imagesRefStorage = FirebaseStorage.getInstance().reference
         val uid = intent.getStringExtra("uid")
 
         // Open Camera of the Phone
@@ -148,7 +148,7 @@ class CameraActivity : ComponentActivity() {
 
     private fun saveImageToDatabase(imagePath: String, title: String, description: String, uid: String, longitude: Double, latitude: Double) {
         val file = Uri.fromFile(File(imagePath))
-        val imageRef = imagesRefStorage.child(file.lastPathSegment!!)
+        val imageRef = imagesRefStorage.child("users/$uid/images/${UUID.randomUUID()}.jpg")
 
         imageRef.putFile(file).addOnSuccessListener {
             imageRef.downloadUrl.addOnSuccessListener {

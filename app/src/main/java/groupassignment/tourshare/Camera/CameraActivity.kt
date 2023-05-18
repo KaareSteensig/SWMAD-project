@@ -92,7 +92,7 @@ class CameraActivity : ComponentActivity() {
                 imagePath = saveImageToInternalStorage(photo!!)
                 Log.i("SAVING", "Image saved to $imagePath")
                 if (uid != null) {
-                    saveImageToDatabase(imagePath, title, description, uid)
+                    saveImageToDatabase(imagePath, title, description, uid, long, lat)
                 }
                 // Reload image withthis URI
                 //Log.i("SAVING", "Image saved to ${imagePath}")
@@ -150,7 +150,7 @@ class CameraActivity : ComponentActivity() {
         return file.absolutePath
     }
 
-    private fun saveImageToDatabase(imagePath: String, title: String, description: String, uid: String) {
+    private fun saveImageToDatabase(imagePath: String, title: String, description: String, uid: String, longitude: Double, latitude: Double) {
         val file = Uri.fromFile(File(imagePath))
         val imageRef = imagesRefStorage.child(file.lastPathSegment!!)
 
@@ -159,7 +159,7 @@ class CameraActivity : ComponentActivity() {
                 val newImageKey = imagesRefDB.child("users").child(uid).child("images").push().key
                 if (newImageKey != null) {
                     val image =
-                        groupassignment.tourshare.firebase.Image(title, description, imagePath)
+                        groupassignment.tourshare.firebase.Image(title, description, imagePath, longitude, latitude)
                     imagesRefDB.child("users").child(uid).child("images").child(newImageKey)
                         .setValue(image)
                         .addOnCompleteListener {

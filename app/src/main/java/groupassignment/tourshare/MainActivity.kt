@@ -32,8 +32,8 @@ import com.google.android.gms.tasks.Tasks.await
 import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.values
 import com.google.gson.Gson
 import com.google.maps.android.compose.*
 import com.karumi.dexter.Dexter
@@ -332,6 +332,64 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             false
         }
 
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val uid = currentUser?.uid
+        val imagesRefDB = uid?.let {
+            FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app")
+                .reference.child("users").child(it).child("images")
+        }
+        // Set up the ValueEventListener to fetch the image data from the database
+        val imagesListener = object : ValueEventListener {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                for (imageSnapshot in snapshot.children) {
+                    val url = imageSnapshot.child("imageUrl").value as? String ?: ""
+                    val title = imageSnapshot.child("title").value as? String ?: ""
+                    val description = imageSnapshot.child("description").value as? String ?: ""
+
+
+                    //Todo: retreive data
+                    val long = imageSnapshot.child("longitude").value as? Double?: 0.0
+                    val lat = imageSnapshot.child("latitude").value as? Double ?: 0.0
+                    val routeNr = 1
+
+
+                    val photomarker = googleMap.addMarker(
+                        MarkerOptions()
+                            .position(
+                                LatLng(
+                                    lat + 0.002,
+                                    long + 0.002
+                                )
+                            )
+                            .title(title)
+                            .snippet(description)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_icon))
+                    )
+                    if (photomarker != null) {
+                        PhotoMarkers.add(photomarker)
+                        val photo = Photo(title, url, long,  lat, description, routeNr )
+                        imageList.add(photo)
+                    }
+                    // Add the photo to the map
+                    /*googleMap.addMarker(
+                        MarkerOptions()
+                            .title(title)
+                            .snippet(description)
+                            .position(LatLng(lat, long))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_icon))
+                    )*/
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the database error
+                Log.e("MainActivity", "Error retrieving image data: $error")
+            }
+        }
+        // Attach the ValueEventListener to the database reference
+        imagesRefDB?.addValueEventListener(imagesListener)
 
     }
 
@@ -430,9 +488,11 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         when (requestCode) {
             setMarkerRequestCode -> {
                 if (resultCode == RESULT_OK) {
+                    //not needed anymore
+
                     // the taken photo will be submitted by the returning intent
                     // get the photo
-                    var photo = data?.getParcelableExtra<Photo>("photo")
+                    /*var photo = data?.getParcelableExtra<Photo>("photo")
                     if (photo != null) {
                         //add default values
                         if (photo.title == "") {
@@ -475,7 +535,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                             }
                            // Log.i("MAIN", "You set a marker on  ${imageList[i].title}")
                         }
-                    }
+                    }*/
                 }
             }
         }

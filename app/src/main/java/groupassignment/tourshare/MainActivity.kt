@@ -32,8 +32,8 @@ import com.google.android.gms.tasks.Tasks.await
 import com.google.android.material.navigation.NavigationView
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.values
 import com.google.gson.Gson
 import com.google.maps.android.compose.*
 import com.karumi.dexter.Dexter
@@ -91,63 +91,69 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         // Init firebase
         routeRefDB = FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app").reference
 
+        Dexter.withContext(this).withPermissions(
+            //if(android.os.Build.VERSION.SDK_INT >= )
+            Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA,
+        ).withListener(object : MultiplePermissionsListener {
+            // What to do when we have all permissions:
+            @SuppressLint("CoroutineCreationDuringComposition")
+            override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+                p0?.let {
+                    if (p0!!.areAllPermissionsGranted()) {
+
+                    }
+                }
+            }
+            // What to do when we have not all permissions:
+            override fun onPermissionRationaleShouldBeShown(
+                p0: MutableList<PermissionRequest>?,
+                p1: PermissionToken?
+            ) {
+                // create intent which goes to the settings of the application
+                AlertDialog.Builder(this@MainActivity)
+                    .setMessage("You have to give permissions!")
+                    .setPositiveButton("go to settings") { _, _ ->
+                        try {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            val uri = Uri.fromParts("package", packageName, null)
+                            intent.data = uri
+                            startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+                            e.printStackTrace()
+                        }
+                    }
+                    .setNegativeButton("cancel")
+                    { dialog, _ ->
+                        dialog.dismiss()
+                    }.show()
+            }
+        }).onSameThread().check()
+
         // If the Camera Button is clicked:
         val openCameraButton: ImageButton = findViewById(R.id.Camera_Button)
         openCameraButton.setOnClickListener {
             // Check if the app has the permission to storage and camera
             // use Dexter plugin to simplify the process
             Log.i("Main", "You clicked the camera button")
-            Dexter.withContext(this).withPermissions(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA,
-            ).withListener(object : MultiplePermissionsListener {
-                // What to do when we have all permissions:
-                @SuppressLint("CoroutineCreationDuringComposition")
-                override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
-                    p0?.let {
-                        if (p0!!.areAllPermissionsGranted()) {
-                              findViewById<ComposeView>(R.id.my_composable).setContent {
-                                val scope = rememberCoroutineScope()
-                                    scope.launch {
-                                        imagelocation = locationService.getCurrentLocation()
-                                        val CameraView =
-                                            Intent(this@MainActivity, CameraActivity::class.java)
-                                        CameraView.putExtra("long", imagelocation!!.longitude)
-                                        CameraView.putExtra("lat", imagelocation!!.latitude)
-                                        CameraView.putExtra("routeNr", routeNr)
-                                        CameraView.putExtra("uid", currentUserID)
-                                        //startActivity(CameraView)
-                                        startActivityForResult(CameraView, setMarkerRequestCode)
-                                    }
-                            }
-                        }
+            findViewById<ComposeView>(R.id.my_composable).setContent {
+                val scope = rememberCoroutineScope()
+                LaunchedEffect(locationService.locationOn.value) {
+                    scope.launch {
+                        imagelocation = locationService.getCurrentLocation()
+                        val CameraView =
+                            Intent(this@MainActivity, CameraActivity::class.java)
+                        CameraView.putExtra("long", imagelocation!!.longitude)
+                        CameraView.putExtra("lat", imagelocation!!.latitude)
+                        CameraView.putExtra("routeNr", routeNr)
+                        CameraView.putExtra("uid", currentUserID)
+                        //startActivity(CameraView)
+                        startActivityForResult(CameraView, setMarkerRequestCode)
                     }
                 }
-                // What to do when we have not all permissions:
-                override fun onPermissionRationaleShouldBeShown(
-                    p0: MutableList<PermissionRequest>?,
-                    p1: PermissionToken?
-                ) {
-                    // create intent which goes to the settings of the application
-                    AlertDialog.Builder(this@MainActivity)
-                        .setMessage("You have to give permissions!")
-                        .setPositiveButton("go to settings") { _, _ ->
-                            try {
-                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                val uri = Uri.fromParts("package", packageName, null)
-                                intent.data = uri
-                                startActivity(intent)
-                            } catch (e: ActivityNotFoundException) {
-                                e.printStackTrace()
-                            }
-                        }
-                        .setNegativeButton("cancel")
-                        { dialog, _ ->
-                            dialog.dismiss()
-                        }.show()
-                }
-            }).onSameThread().check()
+            }
         }
 
         val openMenuButton: ImageButton = findViewById(R.id.Menu_Button)
@@ -326,6 +332,64 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
             false
         }
 
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val uid = currentUser?.uid
+        val imagesRefDB = uid?.let {
+            FirebaseDatabase.getInstance("https://spotshare12-default-rtdb.europe-west1.firebasedatabase.app")
+                .reference.child("users").child(it).child("images")
+        }
+        // Set up the ValueEventListener to fetch the image data from the database
+        val imagesListener = object : ValueEventListener {
+            @SuppressLint("NotifyDataSetChanged")
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+                for (imageSnapshot in snapshot.children) {
+                    val url = imageSnapshot.child("imageUrl").value as? String ?: ""
+                    val title = imageSnapshot.child("title").value as? String ?: ""
+                    val description = imageSnapshot.child("description").value as? String ?: ""
+
+
+                    //Todo: retreive data
+                    val long = imageSnapshot.child("longitude").value as? Double?: 0.0
+                    val lat = imageSnapshot.child("latitude").value as? Double ?: 0.0
+                    val routeNr = 1
+
+
+                    val photomarker = googleMap.addMarker(
+                        MarkerOptions()
+                            .position(
+                                LatLng(
+                                    lat + 0.002,
+                                    long + 0.002
+                                )
+                            )
+                            .title(title)
+                            .snippet(description)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_icon))
+                    )
+                    if (photomarker != null) {
+                        PhotoMarkers.add(photomarker)
+                        val photo = Photo(title, url, long,  lat, description, routeNr )
+                        imageList.add(photo)
+                    }
+                    // Add the photo to the map
+                    /*googleMap.addMarker(
+                        MarkerOptions()
+                            .title(title)
+                            .snippet(description)
+                            .position(LatLng(lat, long))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.image_icon))
+                    )*/
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the database error
+                Log.e("MainActivity", "Error retrieving image data: $error")
+            }
+        }
+        // Attach the ValueEventListener to the database reference
+        imagesRefDB?.addValueEventListener(imagesListener)
 
     }
 
@@ -424,9 +488,11 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
         when (requestCode) {
             setMarkerRequestCode -> {
                 if (resultCode == RESULT_OK) {
+                    //not needed anymore
+
                     // the taken photo will be submitted by the returning intent
                     // get the photo
-                    var photo = data?.getParcelableExtra<Photo>("photo")
+                    /*var photo = data?.getParcelableExtra<Photo>("photo")
                     if (photo != null) {
                         //add default values
                         if (photo.title == "") {
@@ -457,8 +523,8 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                                 MarkerOptions()
                                     .position(
                                         LatLng(
-                                            imageList[i].lat + 0.002,
-                                            imageList[i].long + 0.002
+                                            imageList[i].lat,
+                                            imageList[i].long
                                         )
                                     )
                                     .title(imageList[i].title)
@@ -469,7 +535,7 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback  {
                             }
                            // Log.i("MAIN", "You set a marker on  ${imageList[i].title}")
                         }
-                    }
+                    }*/
                 }
             }
         }

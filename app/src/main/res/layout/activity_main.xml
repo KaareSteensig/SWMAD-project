@@ -6,9 +6,8 @@
     android:layout_height="match_parent"
     android:id="@+id/drawerLayout"
     tools:context=".MainActivity">
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#01395D">
@@ -23,6 +22,23 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/Map_View"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="490dp"
+            android:layout_marginBottom="10dp"
+            android:adjustViewBounds="true"
+            android:background="#01395D"
+            android:contentDescription="mapview"
+            android:scaleType="centerInside"
+            app:layout_constraintBottom_toTopOf="@+id/Play_Button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Menu_Button"
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageButton
             android:id="@+id/Play_Button"
@@ -83,22 +99,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/Map_View"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="580dp"
-            android:layout_marginBottom="92dp"
-            android:adjustViewBounds="true"
-            android:background="#01395D"
-            android:contentDescription="mapview"
-            android:scaleType="centerInside"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/Menu_Button" />
-
         <ImageButton
             android:id="@+id/Menu_Button"
             android:layout_width="60dp"
@@ -120,18 +120,19 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:fontFamily="@font/amaranth"
-            android:text="@string/route"
+            android:gravity="center"
+            android:text="Route"
             android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="#FFFFFF"
             android:textSize="24sp"
+            android:textStyle="bold"
             android:visibility="visible"
-            app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toTopOf="@+id/Map_View"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/Menu_Button"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageButton
             android:id="@+id/Camera_Button"
